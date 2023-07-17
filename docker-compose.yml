@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  app:
+    image: "bytecrusader/mattermost-bot:v.0.0.1"
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - "8000:8000"
