@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mattermost-bot
+  labels:
+    # Label to include some custom logic, for example prometheus
+    monitoring: enabled
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$3
+spec:
+  # The name of an IngressClass cluster resource
+  ingressClassName: nginx
+  # A list of host rules used to configure the Ingress
+  rules:
+    - host: arch.homework
+      http:
+        paths:
+          - path: /()()(health.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: mattermost-bot
+                port:
+                  number: 8080
+          - path: /otusapp(/|$)(.*/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: mattermost-bot
+                port:
+                  number: 8080
+          - path: /()()(actuator/health.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: mattermost-bot
+                port:
+                  number: 8081

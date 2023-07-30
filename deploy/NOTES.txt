@@ -1,0 +1,21 @@
+Get the application URL by running these commands:
+
+1. Default URL with GET API {host}/health method:
+  http://arch.homework/health
+
+2. Rewrite URL with GET API from {host}/otusapp/{some_stud_name}/* -> to {host}/*:
+  http://arch.homework/otusapp/a_i_permyakov/health -> http://arch.homework/health
+
+3. Default actuator URL with GET {host}/actuator/health:
+  http://arch.homework/actuator/health
+
+Init k8s app:
+
+1. kubectl apply -f .
+
+Clean k8s app:
+
+1. kubectl delete deployment mattermost-bot
+2. kubectl delete ingress mattermost-bot
+3. kubectl delete service mattermost-bot
+4. kubectl delete configmap mattermost-bot-config
