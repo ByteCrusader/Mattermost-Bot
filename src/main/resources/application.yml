@@ -5,3 +5,41 @@ server:
 spring:
   main:
     banner-mode: "off"
+
+management:
+  server:
+    port: 8081
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,loggers,refresh
+  endpoint:
+    metrics.enabled: true
+    prometheus.enabled: true
+    health:
+      show-details: always
+      probes.enabled: true
+    shutdown.enabled: true
+    restart.enabled: true
+  health:
+    readinessstate:
+      enabled: true
+    livenessstate:
+      enabled: true
+    vault:
+      enabled: false
+  info:
+    git:
+      mode: FULL
+  metrics:
+    tags:
+      application: mattermost-bot
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  httpexchanges:
+    recording:
+      enabled: false
+  security:
+    enable: false
