@@ -5,9 +5,10 @@ Init k8s app:
 Clean k8s app:
 
 1. helm uninstall mattermost-bot
-2.
-
-1. kubectl delete deployment mattermost-bot
-2. kubectl delete ingress mattermost-bot
-3. kubectl delete service mattermost-bot
-4. kubectl delete configmap mattermost-bot-config
+2. kubectl delete deployment mattermost-bot
+3. kubectl delete ingress mattermost-bot
+4. kubectl delete service mattermost-bot
+5. kubectl delete configmap mattermost-bot-config
+6. kubectl delete secrets mattermost-bot
+7. kubectl delete cm mattermost-bot
+8. kubectl delete pvc data-mattermost-bot-postgresql-0
