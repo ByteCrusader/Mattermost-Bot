@@ -78,7 +78,7 @@ spec:
           # List of ports to expose from the container
           ports:
             - name: http
-              containerPort: 8000
+              containerPort: 8080
               protocol: TCP
             - name: actuator
               containerPort: 8081

@@ -1,5 +1,5 @@
 server:
-  port: 8000
+  port: 8080
   shutdown: graceful
 
 spring:
@@ -26,7 +26,7 @@ spring:
 
 management:
   server:
-    port: 8085
+    port: 8081
   endpoints:
     web:
       exposure:

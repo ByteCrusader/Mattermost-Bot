@@ -10,5 +10,5 @@ COPY --from=builder extract/application/ $APP_HOME/
 COPY --from=builder extract/snapshot-dependencies/ $APP_HOME/
 COPY --from=builder extract/spring-boot-loader/ $APP_HOME/
 
-EXPOSE 8000
+EXPOSE 8080
 ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]

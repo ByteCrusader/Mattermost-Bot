@@ -37,12 +37,19 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: NodePort
-  port: 8000
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: http
+    - name: actuator
+      protocol: TCP
+      port: 8081
+      targetPort: actuator
 
 ingress:
   enabled: true
-  className: ""
+  className: "nginx"
   annotations: {}
   kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
@@ -56,6 +63,13 @@ ingress:
               name: mattermost-bot
               port:
                 number: 8080
+        - path: /actuator/health
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: mattermost-bot
+              port:
+                number: 8081
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
