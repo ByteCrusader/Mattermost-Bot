@@ -2,12 +2,14 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "mattermost-bot.fullname" . }}
+  labels:
+    {{- include "mattermost-bot.labels" . | nindent 4 }}
 spec:
   # Maximum value of replicas
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: mattermost-bot
+      {{- include "mattermost-bot.selectorLabels" . | nindent 6 }}
   strategy:
     # https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
     type: RollingUpdate
@@ -19,7 +21,7 @@ spec:
   template:
     metadata:
       labels:
-        app: mattermost-bot
+        {{- include "mattermost-bot.labels" . | nindent 8 }}
     spec:
       containers:
         - name: {{ .Chart.Name }}

@@ -46,6 +46,7 @@ app.kubernetes.io/managed-by: "{{ .Release.Service }}"
 Selector labels
 */}}
 {{- define "mattermost-bot.selectorLabels" -}}
+app: {{ include "mattermost-bot.name" . }}
 app.kubernetes.io/name: {{ include "mattermost-bot.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
