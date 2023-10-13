@@ -5,10 +5,28 @@ server:
 spring:
   main:
     banner-mode: "off"
+  r2dbc:
+    username: ${MASTER_USERNAME}
+    password: ${MASTER_PASSWORD}
+    url: r2dbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?stringtype=unspecified
+    pool:
+      enabled: true
+      initial-size: 10
+      max-idle-time: 1m
+      max-size: 30
+  data:
+    r2dbc:
+      repositories:
+        enabled: true
+  liquibase:
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?stringtype=unspecified
+    user: ${MASTER_USERNAME}
+    password: ${MASTER_PASSWORD}
+    change-log: "classpath:/liquibase/changelog.yaml"
 
 management:
   server:
-    port: 8081
+    port: 8085
   endpoints:
     web:
       exposure:

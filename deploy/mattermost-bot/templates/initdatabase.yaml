@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bot-migration
+spec:
+  template:
+    metadata:
+      name: bot-migration
+    annotations:
+      # This is what defines this resource as a hook. Without this line, the
+      # job is considered part of the release.
+      "helm.sh/hook": post-install
+      "helm.sh/hook-weight": "-5"
+      "helm.sh/hook-delete-policy": hook-succeeded
+    spec:
+      containers:
+        - name: post-install-job
+          image: postgres:latest
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mattermost-bot-postgresql
+                  key: postgres-password
+          command:
+            - sh
+            - "-c"
+            - |
+              psql postgres://pstgrs:psswrd@mattermost-bot-postgresql/bot <<'EOF'
+                create table if not exists bots (
+                id serial primary key,
+                user_id varchar, 
+                create_at bigint,
+                update_at bigint,
+                delete_at bigint,
+                username varchar,
+                display_name varchar,
+                description varchar,
+                owner_id varchar 
+                );
+              EOF
+      restartPolicy: Never
