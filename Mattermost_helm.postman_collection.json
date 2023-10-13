@@ -1,0 +1,106 @@
+{
+	"info": {
+		"_postman_id": "73949b71-730b-44cb-b05e-00d4442323cd",
+		"name": "Mattermost",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7327175"
+	},
+	"item": [
+		{
+			"name": "PUT create new bot k8s",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\":\"someBotName\",\n    \"display_name\":\"someDisplayBotName\",\n    \"description\":\"botDescription\",\n    \"owner_id\":\"someOwnerUUID\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://arch.homework/bot",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"bot"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST update bot info k8s",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\":\"someBotName\",\n    \"display_name\":\"someDisplayBotName22\",\n    \"description\":\"botDescription22\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://arch.homework/bot",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"bot"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET bot info k8s",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://arch.homework/bot/someBotName",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"bot",
+						"someBotName"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE bot info k8s",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://arch.homework/bot/someBotName",
+					"protocol": "http",
+					"host": [
+						"arch",
+						"homework"
+					],
+					"path": [
+						"bot",
+						"someBotName"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
