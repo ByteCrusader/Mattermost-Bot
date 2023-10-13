@@ -9,10 +9,9 @@ metadata:
   name: bot-secret
 type: Opaque
 data:
-  DATABASE_URI: {{ printf "r2dbc:postgresql://%s:%s@postgresql:%s/%s" .Values.postgresql.username .Values.postgresql.password .Values.postgresql.servicePort .Values.postgresql.database  | b64enc | quote }}
   DB_HOST: {{ printf "%s-postgresql" .Chart.Name  | b64enc | quote }}
-  DB_NAME: {{ .Values.postgresql.global.postgresql.postgresqlDatabase  | b64enc | quote }}
-  MASTER_PASSWORD: {{ .Values.postgresql.global.postgresql.postgresqlPassword  | b64enc | quote }}
-  MASTER_USERNAME: {{ .Values.postgresql.global.postgresql.postgresqlUsername  | b64enc | quote }}
-  DB_PORT: {{ .Values.postgresql.global.postgresql.servicePort  | b64enc | quote }}
+  DB_NAME: {{ .Values.postgresql.auth.database  | b64enc | quote }}
+  MASTER_PASSWORD: {{ .Values.postgresql.auth.password  | b64enc | quote }}
+  MASTER_USERNAME: {{ .Values.postgresql.auth.username  | b64enc | quote }}
+  DB_PORT: {{ .Values.postgresql.servicePort  | b64enc | quote }}
 

@@ -1,6 +1,6 @@
 Init k8s app:
 
-1. helm install mattermost-bot -n "helm" ./
+1. helm install mattermost-bot ./
 
 Clean k8s app:
 

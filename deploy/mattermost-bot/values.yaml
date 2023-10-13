@@ -88,9 +88,8 @@ affinity: {}
 
 postgresql:
   enabled: true
-  global:
-    postgresql:
-      postgresqlDatabase: "bot"
-      postgresqlPassword: "psswrd"
-      postgresqlUsername: "pstgrs"
-      servicePort: "5432"
+  auth:
+    database: "bot"
+    password: "psswrd"
+    username: "pstgrs"
+  servicePort: "5432"

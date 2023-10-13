@@ -109,11 +109,6 @@ spec:
           env:
             - name: JMX_PORT
               value: "8090"
-            - name: DATABASE_URI
-              valueFrom:
-                secretKeyRef:
-                  name: bot-secret
-                  key: DATABASE_URI
             - name: DB_HOST
               valueFrom:
                 secretKeyRef:

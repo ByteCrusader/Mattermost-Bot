@@ -18,11 +18,11 @@ spring:
     r2dbc:
       repositories:
         enabled: true
-  liquibase:
-    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?stringtype=unspecified
-    user: ${MASTER_USERNAME}
-    password: ${MASTER_PASSWORD}
-    change-log: "classpath:/liquibase/changelog.yaml"
+#  liquibase:    //TODO коммент для раскатки миграции через k8s Job
+#    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?stringtype=unspecified
+#    user: ${MASTER_USERNAME}
+#    password: ${MASTER_PASSWORD}
+#    change-log: "classpath:/liquibase/changelog.yaml"
 
 management:
   server:
