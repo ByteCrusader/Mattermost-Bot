@@ -89,7 +89,7 @@ spec:
               path: /actuator/health
               port: 8081
               scheme: HTTP
-            initialDelaySeconds: 100
+            initialDelaySeconds: 20
             failureThreshold: 3
           # A check that allows Kubernetes to determine if the pod and the application in it are alive, in case it is not running - Kubernetes RESTART under
           livenessProbe:
@@ -97,7 +97,7 @@ spec:
               path: /actuator/health
               port: 8081
               scheme: HTTP
-            initialDelaySeconds: 60
+            initialDelaySeconds: 15
             failureThreshold: 5
           # A check that is required if your application takes a long time to start. If this check is defined, then the liveness and readiness checks will start only after it has been successfully passed.
           #startupProbe: ...
