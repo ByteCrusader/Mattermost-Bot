@@ -17,5 +17,5 @@ spec:
       targetPort: http
     - name: actuator
       protocol: TCP
-      port: 8081
+      port: 9000
       targetPort: actuator

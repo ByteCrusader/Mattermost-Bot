@@ -45,7 +45,7 @@ service:
       targetPort: http
     - name: actuator
       protocol: TCP
-      port: 8081
+      port: 9000
       targetPort: actuator
 
 ingress:
@@ -64,13 +64,13 @@ ingress:
               name: mattermost-bot
               port:
                 number: 8080
-        - path: /actuator/health
+        - path: /actuator
           pathType: ImplementationSpecific
           backend:
             service:
               name: mattermost-bot
               port:
-                number: 8081
+                number: 9000
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
