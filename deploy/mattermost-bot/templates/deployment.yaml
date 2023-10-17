@@ -114,27 +114,27 @@ spec:
             - name: DB_HOST
               valueFrom:
                 secretKeyRef:
-                  name: bot-secret
+                  name: {{ include "mattermost-bot.fullname" . }}
                   key: DB_HOST
             - name: DB_NAME
               valueFrom:
                 secretKeyRef:
-                  name: bot-secret
+                  name: {{ include "mattermost-bot.fullname" . }}
                   key: DB_NAME
             - name: MASTER_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: bot-secret
+                  name: {{ include "mattermost-bot.fullname" . }}
                   key: MASTER_PASSWORD
             - name: MASTER_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: bot-secret
+                  name: {{ include "mattermost-bot.fullname" . }}
                   key: MASTER_USERNAME
             - name: DB_PORT
               valueFrom:
                 secretKeyRef:
-                  name: bot-secret
+                  name: {{ include "mattermost-bot.fullname" . }}
                   key: DB_PORT
       # Data for correct pull image from private registry
       #imagePullSecrets:
