@@ -18,4 +18,4 @@ Clean k8s app:
 1. kubectl delete deployment mattermost-bot
 2. kubectl delete ingress mattermost-bot
 3. kubectl delete service mattermost-bot
-4. kubectl delete configmap mattermost-bot-config
+4. kubectl delete configmap mattermost-bot
