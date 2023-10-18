@@ -83,6 +83,11 @@ public class CustomUserRepositoryImpl implements CustomUserRepository {
      */
     private Mono<UserEntity> saveRoles(UserEntity user) {
         return Flux.fromIterable(user.getRoles())
+                .flatMap(
+                        userRoleEntity ->
+                                userRoleRepository.findByName(userRoleEntity.getName())
+                                        .defaultIfEmpty(userRoleEntity)
+                )
                 .flatMap(userRoleRepository::save)
                 .collect(Collectors.toSet())
                 .doOnNext(user::setRoles)
