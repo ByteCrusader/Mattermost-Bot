@@ -61,3 +61,7 @@ management:
       enabled: false
   security:
     enable: false
+
+jwt:
+  secret: ${JSON_TOKEN_SECRET}
+  expiration: 86400

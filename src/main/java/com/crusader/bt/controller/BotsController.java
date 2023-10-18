@@ -2,7 +2,6 @@ package com.crusader.bt.controller;
 
 import com.crusader.bt.constant.RouteConstants;
 import com.crusader.bt.dto.BotDto;
-import com.crusader.bt.dto.StatusDto;
 import com.crusader.bt.service.BotsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -46,12 +46,13 @@ public class BotsController {
             }
     )
     public Mono<ResponseEntity<BotDto>> createBot(
-            @Parameter(name = "createBotBody", description = "Object with the bot info") @RequestBody BotDto createDto
+            @Parameter(name = "createBotBody", description = "Object with the bot info") @RequestBody BotDto createDto,
+            ServerWebExchange exchange
     ) {
-        return botsService.createBot(
-                        createDto.getUsername(), createDto.getDisplayName(),
-                        createDto.getDescription(), createDto.getOwnerId()
-                )
+        return exchange.getPrincipal()
+                .flatMap(principal -> botsService.createBot(
+                        principal, createDto.getUsername(), createDto.getDisplayName(), createDto.getDescription()
+                ))
                 .map(ResponseEntity::ok);
     }
 
@@ -71,11 +72,13 @@ public class BotsController {
             }
     )
     public Mono<ResponseEntity<BotDto>> updateBot(
-            @Parameter(name = "updateBotBody", description = "Object with the bot info") @RequestBody BotDto updateDto
+            @Parameter(name = "updateBotBody", description = "Object with the bot info") @RequestBody BotDto updateDto,
+            ServerWebExchange exchange
     ) {
-        return botsService.updateBotInfo(
-                        updateDto.getUsername(), updateDto.getDisplayName(), updateDto.getDescription()
-                )
+        return exchange.getPrincipal()
+                .flatMap(principal -> botsService.updateBotInfo(
+                        principal, updateDto.getUsername(), updateDto.getDisplayName(), updateDto.getDescription()
+                ))
                 .map(ResponseEntity::ok);
     }
 
@@ -95,9 +98,11 @@ public class BotsController {
             }
     )
     public Mono<ResponseEntity<BotDto>> deleteBot(
-            @Parameter(name = "username", description = "Name of bot", in = ParameterIn.QUERY) @PathVariable String username
+            @Parameter(name = "username", description = "Name of bot", in = ParameterIn.QUERY) @PathVariable String username,
+            ServerWebExchange exchange
     ) {
-        return botsService.deleteBot(username)
+        return exchange.getPrincipal()
+                .flatMap(principal -> botsService.deleteBot(principal, username))
                 .map(ResponseEntity::ok);
     }
 
@@ -117,9 +122,11 @@ public class BotsController {
             }
     )
     public Mono<ResponseEntity<BotDto>> getBot(
-            @Parameter(name = "username", description = "Name of bot", in = ParameterIn.QUERY) @PathVariable String username
+            @Parameter(name = "username", description = "Name of bot", in = ParameterIn.QUERY) @PathVariable String username,
+            ServerWebExchange exchange
     ) {
-        return botsService.getBotInfo(username)
+        return exchange.getPrincipal()
+                .flatMap(principal -> botsService.getBotInfo(principal, username))
                 .map(ResponseEntity::ok);
     }
 

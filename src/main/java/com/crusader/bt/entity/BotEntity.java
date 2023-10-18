@@ -1,10 +1,10 @@
 package com.crusader.bt.entity;
 
-import jakarta.annotation.Generated;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
@@ -14,13 +14,12 @@ import java.math.BigInteger;
  * A bot account
  */
 @Data
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "bots")
-public class BotEntity {
-
-    @Id
-    private Long id;
+public class BotEntity extends BaseEntity {
 
     /**
      * The user id of the associated user entry

@@ -14,4 +14,5 @@ data:
   MASTER_PASSWORD: {{ .Values.postgresql.auth.password  | b64enc | quote }}
   MASTER_USERNAME: {{ .Values.postgresql.auth.username  | b64enc | quote }}
   DB_PORT: {{ .Values.postgresql.servicePort  | b64enc | quote }}
+  JSON_TOKEN_SECRET: {{ .Values.jwt.secret  | b64enc | quote }}
 

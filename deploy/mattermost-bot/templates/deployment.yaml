@@ -136,6 +136,11 @@ spec:
                 secretKeyRef:
                   name: {{ include "mattermost-bot.fullname" . }}
                   key: DB_PORT
+            - name: JSON_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "mattermost-bot.fullname" . }}
+                  key: JSON_TOKEN_SECRET
       # Data for correct pull image from private registry
       #imagePullSecrets:
       #  - name: mattermost-bot

@@ -5,6 +5,8 @@ import com.crusader.bt.dto.BotDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.security.Principal;
+
 public interface BotsService {
 
     /**
@@ -16,7 +18,7 @@ public interface BotsService {
      * @param ownerId     user id of the user that currently owns this bot
      * @return created bot
      */
-    Mono<BotDto> createBot(String username, String displayName, String description, String ownerId);
+    Mono<BotDto> createBot(Principal principal, String username, String displayName, String description);
 
     /**
      * Update information about bot
@@ -26,7 +28,7 @@ public interface BotsService {
      * @param description bot description
      * @return resulted bot
      */
-    Mono<BotDto> updateBotInfo(String username, String displayName, String description);
+    Mono<BotDto> updateBotInfo(Principal principal, String username, String displayName, String description);
 
     /**
      * Delete bot from system
@@ -34,7 +36,7 @@ public interface BotsService {
      * @param username bot username
      * @return resulted bot
      */
-    Mono<BotDto> deleteBot(String username);
+    Mono<BotDto> deleteBot(Principal principal, String username);
 
     /**
      * Get bot information by username
@@ -42,7 +44,7 @@ public interface BotsService {
      * @param username bot username
      * @return founded bot
      */
-    Mono<BotDto> getBotInfo(String username);
+    Mono<BotDto> getBotInfo(Principal principal, String username);
 
     /**
      * Get list of bots into current team

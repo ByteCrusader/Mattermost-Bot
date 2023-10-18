@@ -108,3 +108,6 @@ postgresql:
     password: "psswrd"
     username: "pstgrs"
   servicePort: "5432"
+
+jwt:
+  secret: "B#PmRL5mJPF7J2EJK4X$Y|ikmegMrJ4TPNBh|{zgTPnDCWwFLTFY}4lgN?*iul{F|wUZdsc#PQ@KYX36JSNZ17r8OR7DfH7n?4G"

@@ -7,11 +7,13 @@ import com.crusader.bt.repos.BotRepository;
 import com.crusader.bt.service.BotsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigInteger;
+import java.security.Principal;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -24,38 +26,41 @@ public class BotsServiceImpl implements BotsService {
     private final BotEntityToDtoConverter botConverter;
 
     @Override
-    public Mono<BotDto> createBot(String username, String displayName, String description, String ownerId) {
+    public Mono<BotDto> createBot(Principal principal, String username, String displayName, String description) {
 
         return botRepository.save(
                         createNewBotEntity(
-                                username, displayName, description, ownerId
+                                username, displayName, description, principal.getName()
                         )
                 )
                 .map(botConverter::convert);
     }
 
     @Override
-    public Mono<BotDto> updateBotInfo(String username, String displayName, String description) {
+    public Mono<BotDto> updateBotInfo(Principal principal, String username, String displayName, String description) {
 
         return botRepository.findByUsername(username)
+                .filter(entity -> checkUser(principal, entity.getOwnerId()))
                 .map(botEntity -> updateBotInfo(botEntity, displayName, description))
                 .flatMap(botRepository::save)
                 .map(botConverter::convert);
     }
 
     @Override
-    public Mono<BotDto> deleteBot(String username) {
+    public Mono<BotDto> deleteBot(Principal principal, String username) {
 
         return botRepository.findByUsername(username)
+                .filter(entity -> checkUser(principal, entity.getOwnerId()))
                 .map(this::deleteBot)
                 .flatMap(botRepository::save)
                 .map(botConverter::convert);
     }
 
     @Override
-    public Mono<BotDto> getBotInfo(String username) {
+    public Mono<BotDto> getBotInfo(Principal principal, String username) {
 
         return botRepository.findByUsername(username)
+                .filter(entity -> checkUser(principal, entity.getOwnerId()))
                 .filter(entity -> Objects.isNull(entity.getDeleteAt()))
                 .map(botConverter::convert);
     }
@@ -69,7 +74,6 @@ public class BotsServiceImpl implements BotsService {
 
     private BotEntity createNewBotEntity(String username, String displayName, String description, String ownerId) {
         return new BotEntity(
-                null,
                 UUID.randomUUID().toString(),
                 BigInteger.valueOf(System.currentTimeMillis()),
                 null,
@@ -93,6 +97,11 @@ public class BotsServiceImpl implements BotsService {
         entity.setDeleteAt(BigInteger.valueOf(System.currentTimeMillis()));
 
         return entity;
+    }
+
+    private boolean checkUser(Principal principal, String ownerId) {
+
+        return StringUtils.equals(principal.getName(), ownerId);
     }
 
 }
