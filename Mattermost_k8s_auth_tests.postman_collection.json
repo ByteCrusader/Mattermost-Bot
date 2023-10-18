@@ -441,7 +441,7 @@
 		},
 		{
 			"key": "baseUrl",
-			"value": "http://arch.homework:8080",
+			"value": "http://arch.homework",
 			"type": "string"
 		}
 	]
