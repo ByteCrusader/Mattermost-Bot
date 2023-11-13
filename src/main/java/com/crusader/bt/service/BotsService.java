@@ -5,6 +5,7 @@ import com.crusader.bt.dto.BotDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.math.BigInteger;
 import java.security.Principal;
 
 public interface BotsService {
@@ -26,9 +27,14 @@ public interface BotsService {
      * @param username    bot username
      * @param displayName bot display name
      * @param description bot description
+     * @param updateAt    bot last update time
      * @return resulted bot
      */
-    Mono<BotDto> updateBotInfo(Principal principal, String username, String displayName, String description);
+    Mono<BotDto> updateBotInfo(Principal principal,
+                               String username,
+                               String displayName,
+                               String description,
+                               BigInteger updateAt);
 
     /**
      * Delete bot from system

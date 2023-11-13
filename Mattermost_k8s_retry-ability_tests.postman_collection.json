@@ -1,0 +1,640 @@
+{
+	"info": {
+		"_postman_id": "4453a4be-ff7b-46ae-816d-c62df9ab78b1",
+		"name": "Mattermost k8s retry-ability tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7327175"
+	},
+	"item": [
+		{
+			"name": "Регистрация пользователя",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"username\", pm.variables.replaceIn('{{$randomUserName}}'))",
+							"pm.collectionVariables.set(\"password\", pm.variables.replaceIn('{{$randomPassword}}'))"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\":\"{{username}}\",\n    \"password\":\"{{password}}\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/register",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Логин пользователя",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"token\", responseBody)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\":\"{{username}}\",\n    \"password\":\"{{password}}\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Проверить отсутствие данных о боте",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Проверяем отсутствие данных для пользователя\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.withBody;",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/bot/someBotName",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"bot",
+						"someBotName"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавить нового бота",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"botname\", pm.variables.replaceIn('{{$randomUserName}}'))",
+							"pm.collectionVariables.set(\"botdname\", pm.variables.replaceIn('{{$randomUserName}}'))",
+							"pm.collectionVariables.set(\"botdisc\", pm.variables.replaceIn('{{$randomBs}}'))"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{botname}}\",\n    \"display_name\": \"{{botdname}}\",\n    \"description\": \"{{botdisc}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/bot",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"bot"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Проверяем данные о боте",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Проверяем наличие данных о боте для 1 пользователя\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.username).to.eql(pm.collectionVariables.get(\"botname\"))",
+							"    pm.expect(jsonData.display_name).to.eql(pm.collectionVariables.get(\"botdname\"))",
+							"    pm.expect(jsonData.description).to.eql(pm.collectionVariables.get(\"botdisc\"))",
+							"    pm.expect(jsonData.owner_id).to.eql(pm.collectionVariables.get(\"username\"))",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/bot/{{botname}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"bot",
+						"{{botname}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Пытаемся добавить бота с тем же именем",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Проверяем отсутствие данных для пользователя\", function () {",
+							"    pm.response.to.have.status(500);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{botname}}\",\n    \"display_name\": \"{{botdname}}\",\n    \"description\": \"{{botdisc}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/bot",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"bot"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Снова проверяем данные о боте",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Проверяем наличие данных о боте для 1 пользователя\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    ",
+							"    pm.expect(jsonData.username).to.eql(pm.collectionVariables.get(\"botname\"))",
+							"    pm.expect(jsonData.display_name).to.eql(pm.collectionVariables.get(\"botdname\"))",
+							"    pm.expect(jsonData.description).to.eql(pm.collectionVariables.get(\"botdisc\"))",
+							"    pm.expect(jsonData.owner_id).to.eql(pm.collectionVariables.get(\"username\"))",
+							"});",
+							"",
+							"pm.collectionVariables.set(\"botUpdateAt\", jsonData.update_at);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/bot/{{botname}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"bot",
+						"{{botname}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Обновляем данные бота",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"botdname\", pm.variables.replaceIn('{{$randomUserName}}'))",
+							"pm.collectionVariables.set(\"botdisc\", pm.variables.replaceIn('{{$randomBs}}'))"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\":\"{{botname}}\",\n    \"display_name\": \"{{botdname}}\",\n    \"description\": \"{{botdisc}}\",\n    \"update_at\": {{botUpdateAt}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/bot",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"bot"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Проверяем обновленные данные о боте",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Проверяем наличие данных о боте для 1 пользователя\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    ",
+							"    pm.expect(jsonData.username).to.eql(pm.collectionVariables.get(\"botname\"))",
+							"    pm.expect(jsonData.display_name).to.eql(pm.collectionVariables.get(\"botdname\"))",
+							"    pm.expect(jsonData.description).to.eql(pm.collectionVariables.get(\"botdisc\"))",
+							"    pm.expect(jsonData.owner_id).to.eql(pm.collectionVariables.get(\"username\"))",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/bot/{{botname}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"bot",
+						"{{botname}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Пытаемся обновить данные бота со старым значением update_at",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"botdname\", pm.variables.replaceIn('{{$randomUserName}}'))",
+							"pm.collectionVariables.set(\"botdisc\", pm.variables.replaceIn('{{$randomBs}}'))"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Проверяем пустой ответ при попытке обновить данные бота со старой версией даты\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.withBody;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\":\"{{botname}}\",\n    \"display_name\": \"{{botdname}}\",\n    \"description\": \"{{botdisc}}\",\n    \"update_at\": {{botUpdateAt}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/bot",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"bot"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Удаляем данные о боте",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/bot/{{botname}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"bot",
+						"{{botname}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Проверить отсутствие данных о боте",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Проверяем отсутствие данных об удаленном боте\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.withBody;",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/bot/{{botname}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"bot",
+						"{{botname}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Пытаемся снова удалить данные о боте",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Проверяем пустой ответ при повторном удалении уже удаленного бота\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.withBody;",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/bot/{{botname}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"bot",
+						"{{botname}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"tests[\"[INFO] Request: \" + (('data' in request) ? request['data'] : '') ] = true;",
+					"tests[\"[INFO] Response: \" + responseBody] = true;"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "password",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "username",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "botname",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "botdname",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "botdisc",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "botUpdateAt",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "baseUrl",
+			"value": "http://arch.homework",
+			"type": "string"
+		}
+	]
+}

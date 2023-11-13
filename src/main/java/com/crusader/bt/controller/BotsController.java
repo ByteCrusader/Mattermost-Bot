@@ -77,7 +77,11 @@ public class BotsController {
     ) {
         return exchange.getPrincipal()
                 .flatMap(principal -> botsService.updateBotInfo(
-                        principal, updateDto.getUsername(), updateDto.getDisplayName(), updateDto.getDescription()
+                        principal,
+                        updateDto.getUsername(),
+                        updateDto.getDisplayName(),
+                        updateDto.getDescription(),
+                        updateDto.getUpdateAt()
                 ))
                 .map(ResponseEntity::ok);
     }

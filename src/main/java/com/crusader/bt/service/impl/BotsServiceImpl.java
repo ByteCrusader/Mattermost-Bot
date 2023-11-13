@@ -37,10 +37,15 @@ public class BotsServiceImpl implements BotsService {
     }
 
     @Override
-    public Mono<BotDto> updateBotInfo(Principal principal, String username, String displayName, String description) {
+    public Mono<BotDto> updateBotInfo(Principal principal,
+                                      String username,
+                                      String displayName,
+                                      String description,
+                                      BigInteger updateAt) {
 
         return botRepository.findByUsername(username)
                 .filter(entity -> checkUser(principal, entity.getOwnerId()))
+                .filter(botEntity -> checkBotVersion(botEntity, updateAt))
                 .map(botEntity -> updateBotInfo(botEntity, displayName, description))
                 .flatMap(botRepository::save)
                 .map(botConverter::convert);
@@ -51,6 +56,7 @@ public class BotsServiceImpl implements BotsService {
 
         return botRepository.findByUsername(username)
                 .filter(entity -> checkUser(principal, entity.getOwnerId()))
+                .filter(this::checkBotAvailability)
                 .map(this::deleteBot)
                 .flatMap(botRepository::save)
                 .map(botConverter::convert);
@@ -102,6 +108,16 @@ public class BotsServiceImpl implements BotsService {
     private boolean checkUser(Principal principal, String ownerId) {
 
         return StringUtils.equals(principal.getName(), ownerId);
+    }
+
+    private boolean checkBotVersion(BotEntity entity, BigInteger updateAt) {
+
+        return Objects.equals(entity.getUpdateAt(), updateAt);
+    }
+
+    private boolean checkBotAvailability(BotEntity entity) {
+
+        return Objects.isNull(entity.getDeleteAt());
     }
 
 }
