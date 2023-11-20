@@ -6,3 +6,6 @@ pluginManagement {
 }
 
 rootProject.name = "$projectName"
+
+include("services:bricklayer-user")
+include("services:root-srv")
