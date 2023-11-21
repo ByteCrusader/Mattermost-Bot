@@ -38,7 +38,6 @@ public class WebSecurityConfig {
                         exchange ->
                                 exchange.pathMatchers("/user/**").permitAll()
                                         .pathMatchers("/actuator/**").permitAll()
-                                        .pathMatchers("/bots").hasRole("USER")
                                         .anyExchange().authenticated()
                 )
                 .exceptionHandling(

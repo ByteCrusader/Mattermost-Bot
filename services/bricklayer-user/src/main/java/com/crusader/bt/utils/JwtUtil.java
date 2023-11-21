@@ -6,6 +6,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 import java.util.Base64;
@@ -26,6 +27,7 @@ public class JwtUtil {
     public void setSecret(String secret) {
         JwtUtil.secret = secret;
     }
+
     @Value("${jwt.expiration}")
     public void setExpirationDurable(String expirationDurable) {
         JwtUtil.expirationDurable = expirationDurable;
@@ -67,7 +69,7 @@ public class JwtUtil {
      * Генерация нового токена для пользователя,
      * время актуальности токена устанавливается в сутки
      */
-    public static String generateToken(UserEntity user) {
+    public static Pair<String, Long> generateToken(UserEntity user) {
 
         HashMap<String, Object> claims = new HashMap<>();
         claims.put(
@@ -82,13 +84,16 @@ public class JwtUtil {
         Date currentDate = new Date();
         Date expirationDate = new Date(currentDate.getTime() + expirationSeconds * 1000);
 
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(user.getUsername())
-                .setIssuedAt(currentDate)
-                .setExpiration(expirationDate)
-                .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
-                .compact();
+        return Pair.of(
+                Jwts.builder()
+                        .setClaims(claims)
+                        .setSubject(user.getUsername())
+                        .setIssuedAt(currentDate)
+                        .setExpiration(expirationDate)
+                        .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                        .compact(),
+                expirationDate.getTime() / 1000L
+        );
     }
 
 }

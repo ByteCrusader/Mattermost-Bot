@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class MattermostBotApplication {
+public class BricklayerUserApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(MattermostBotApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(BricklayerUserApplication.class, args);
+    }
 
 }

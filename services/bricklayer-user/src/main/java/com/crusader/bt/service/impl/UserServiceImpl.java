@@ -1,6 +1,8 @@
 package com.crusader.bt.service.impl;
 
 import com.crusader.bt.converter.UserEntityToDtoConverter;
+import com.crusader.bt.dto.JwtDto;
+import com.crusader.bt.dto.TokenDto;
 import com.crusader.bt.dto.UserDto;
 import com.crusader.bt.entity.UserEntity;
 import com.crusader.bt.entity.UserRoleEntity;
@@ -8,7 +10,6 @@ import com.crusader.bt.repos.UserRepository;
 import com.crusader.bt.service.UserService;
 import com.crusader.bt.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,8 @@ import java.util.Collections;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+
+    private static final String REQUIRED_CREDENTIALS = "client_credentials";
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -41,17 +44,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Mono<String> loginUser(UserDto userDto) {
+    public Mono<JwtDto> loginUser(TokenDto tokenDto) {
 
-        return userRepository.findByUsername(userDto.getUsername())
-                .map(userDetails -> passwordEncoder.matches(
-                                userDto.getPassword(),
-                                userDetails.getPassword()
-                        ) ?
-                                JwtUtil.generateToken(userDetails) :
-                                StringUtils.EMPTY
-                )
-                .filter(StringUtils::isNotBlank);
+        return Mono.just(tokenDto)
+                .filter(dto -> REQUIRED_CREDENTIALS.equals(dto.getGrantType()))
+                .flatMap(dto -> userRepository.findByUsername(dto.getClientId()))
+                .filter(userDetails -> passwordEncoder.matches(
+                        tokenDto.getClientSecret(),
+                        userDetails.getPassword()
+                ))
+                .map(JwtUtil::generateToken)
+                .map(pair -> JwtDto.builder()
+                        .token(pair.getFirst())
+                        .exp(pair.getSecond())
+                        .build()
+                );
     }
 
     private UserEntity buildNewUser(UserDto userDto) {

@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * A user account
+ * Token object
  */
 @Data
 @AllArgsConstructor
@@ -17,18 +17,23 @@ import lombok.NoArgsConstructor;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserDto {
+public class TokenDto {
 
     /**
      * The user name into system
      */
-    @JsonProperty("username")
-    private String username;
+    @JsonProperty("client_id")
+    private String clientId;
     /**
      * The user password into system
      */
-    @JsonProperty("password")
-    private String password;
+    @JsonProperty("client_secret")
+    private String clientSecret;
+    /**
+     * The grant type for login into system
+     */
+    @JsonProperty("grant_type")
+    private String grantType;
 
 }
 

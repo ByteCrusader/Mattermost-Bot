@@ -27,7 +27,6 @@ dependencies {
     //Swagger
     implementation "io.swagger.core.v3:swagger-annotations:$swaggerAnnotationsVersion"
     //Data Base
-    implementation("org.liquibase:liquibase-core")
     implementation("org.postgresql:postgresql")
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")

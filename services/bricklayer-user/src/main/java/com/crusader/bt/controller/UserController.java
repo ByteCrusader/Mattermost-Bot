@@ -1,6 +1,8 @@
 package com.crusader.bt.controller;
 
 import com.crusader.bt.constant.RouteConstants;
+import com.crusader.bt.dto.JwtDto;
+import com.crusader.bt.dto.TokenDto;
 import com.crusader.bt.dto.UserDto;
 import com.crusader.bt.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,7 +53,7 @@ public class UserController {
     }
 
     /**
-     * POST : login user into system
+     * POST : login user into system by get JWT token
      */
     @PostMapping(RouteConstants.LOGIN_API)
     @Operation(
@@ -61,12 +63,12 @@ public class UserController {
             tags = {"user"},
             responses = {
                     @ApiResponse(responseCode = "200", description = "JWT token if successful", content = {
-                            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = String.class)))
+                            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = JwtDto.class)))
                     })
             }
     )
-    public Mono<ResponseEntity<String>> loginUser(
-            @Parameter(name = "userLoginBody", description = "Object with the user info") @RequestBody UserDto loginDto,
+    public Mono<ResponseEntity<JwtDto>> loginUser(
+            @Parameter(name = "userLoginBody", description = "Object with the user info") @RequestBody TokenDto loginDto,
             ServerWebExchange exchange
     ) {
 

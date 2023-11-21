@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * A user account
+ * Jwt token dto
  */
 @Data
 @AllArgsConstructor
@@ -17,18 +17,23 @@ import lombok.NoArgsConstructor;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserDto {
+public class JwtDto {
 
     /**
-     * The user name into system
+     * Access token into system
      */
-    @JsonProperty("username")
-    private String username;
+    @JsonProperty("access_token")
+    private String token;
     /**
-     * The user password into system
+     * Token Expired date
      */
-    @JsonProperty("password")
-    private String password;
+    @JsonProperty("expires_in")
+    private Long exp;
+    /**
+     * Token type
+     */
+    @JsonProperty("token_type")
+    private String type = "Bearer";
 
 }
 
