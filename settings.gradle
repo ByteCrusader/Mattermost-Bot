@@ -8,5 +8,6 @@ pluginManagement {
 rootProject.name = "$projectName"
 
 include("services:bricklayer-bff")
+include("services:bricklayer-storage")
 include("services:bricklayer-user")
 include("services:root-srv")

@@ -1,0 +1,66 @@
+server:
+  port: 8080
+  shutdown: graceful
+
+spring:
+  main:
+    banner-mode: "off"
+  r2dbc:
+    username: ${MASTER_USERNAME}
+    password: ${MASTER_PASSWORD}
+    url: r2dbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?stringtype=unspecified
+    pool:
+      enabled: true
+      initial-size: 10
+      max-idle-time: 1m
+      max-size: 30
+  data:
+    r2dbc:
+      repositories:
+        enabled: true
+#  liquibase:    //TODO коммент для раскатки миграции через k8s Job
+#    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?stringtype=unspecified
+#    user: ${MASTER_USERNAME}
+#    password: ${MASTER_PASSWORD}
+#    change-log: "classpath:/liquibase/changelog.yaml"
+
+management:
+  server:
+    port: 9000
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,loggers,refresh
+  endpoint:
+    metrics.enabled: true
+    prometheus.enabled: true
+    health:
+      show-details: always
+      probes.enabled: true
+    shutdown.enabled: true
+    restart.enabled: true
+  health:
+    readinessstate:
+      enabled: true
+    livenessstate:
+      enabled: true
+    vault:
+      enabled: false
+  info:
+    git:
+      mode: FULL
+  metrics:
+    tags:
+      application: bricklayer-storage
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  httpexchanges:
+    recording:
+      enabled: false
+  security:
+    enable: false
+
+jwt:
+  secret: ${JSON_TOKEN_SECRET}
