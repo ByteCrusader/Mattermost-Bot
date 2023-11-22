@@ -46,3 +46,9 @@ management:
 
 jwt:
   secret: ${JSON_TOKEN_SECRET}
+
+cnct:
+  scheme: "http"
+  host: "bricklayer-constructor"
+  connectionTimeout: 60000
+  receiveTimeout: 60000

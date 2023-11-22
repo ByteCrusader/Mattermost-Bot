@@ -1,14 +1,13 @@
 package com.crusader.bt.service.impl;
 
+import com.crusader.bt.client.ConstructorClient;
 import com.crusader.bt.dto.BotDto;
 import com.crusader.bt.service.BotsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.math.BigInteger;
 import java.security.Principal;
 
 @Slf4j
@@ -16,39 +15,47 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class BotsServiceImpl implements BotsService {
 
+    private final ConstructorClient constructorClient;
+
     @Override
-    public Mono<BotDto> createBot(Principal principal, String username, String displayName, String description) {
+    public Mono<BotDto> createBot(Principal principal, BotDto createRequest) {
 
-        return Mono.empty(); //todo add request into bot constructor
-
+        return Mono.just(
+                        enrichBotInfo(principal, createRequest)
+                )
+                .flatMap(constructorClient::createBot);
     }
 
     @Override
-    public Mono<BotDto> updateBotInfo(Principal principal,
-                                      String username,
-                                      String displayName,
-                                      String description,
-                                      BigInteger updateAt) {
+    public Mono<BotDto> updateBotInfo(Principal principal, BotDto updateDto) {
 
-        return Mono.empty(); //todo add request into bot constructor
+        return Mono.just(
+                        enrichBotInfo(principal, updateDto)
+                )
+                .flatMap(constructorClient::updateBot);
     }
 
     @Override
     public Mono<BotDto> deleteBot(Principal principal, String username) {
 
-        return Mono.empty(); //todo add request into bot constructor
+        return constructorClient.deleteBot(
+                principal.getName(), username
+        );
     }
 
     @Override
     public Mono<BotDto> getBotInfo(Principal principal, String username) {
 
-        return Mono.empty(); //todo add request into bot constructor
+        return constructorClient.getBot(
+                principal.getName(), username
+        );
     }
 
-    @Override
-    public Flux<BotDto> getBotsList() {
+    private BotDto enrichBotInfo(Principal principal, BotDto inboundRequest) {
 
-        return Flux.empty(); //todo add request into bot constructor
+        inboundRequest.setOwnerId(principal.getName());
+
+        return inboundRequest;
     }
 
 }

@@ -51,7 +51,7 @@ public class BotsController {
     ) {
         return exchange.getPrincipal()
                 .flatMap(principal -> botsService.createBot(
-                        principal, createDto.getUsername(), createDto.getDisplayName(), createDto.getDescription()
+                        principal, createDto
                 ))
                 .map(ResponseEntity::ok);
     }
@@ -77,11 +77,7 @@ public class BotsController {
     ) {
         return exchange.getPrincipal()
                 .flatMap(principal -> botsService.updateBotInfo(
-                        principal,
-                        updateDto.getUsername(),
-                        updateDto.getDisplayName(),
-                        updateDto.getDescription(),
-                        updateDto.getUpdateAt()
+                        principal, updateDto
                 ))
                 .map(ResponseEntity::ok);
     }
