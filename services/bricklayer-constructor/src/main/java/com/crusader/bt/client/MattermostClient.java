@@ -5,8 +5,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.List;
+import java.math.BigInteger;
+import java.util.UUID;
 
 /**
  * Client for mattermost service
@@ -21,9 +24,11 @@ public class MattermostClient {
     private final WebClient mattermostWebClient;
     private final OutboundWebClient outboundWebClient;
 
-    public BotDto createBot(BotDto createRequest) {
+    public Mono<BotDto> createBot(BotDto createRequest) {
 
-        return createRequest;
+        return Mono.just(
+                createNewBotDto(createRequest)
+        );
         /** Comment for correct work into env without mattermost
         return outboundWebClient.sendPostRequest(
                 mattermostWebClient,
@@ -35,9 +40,9 @@ public class MattermostClient {
          */
     }
 
-    public List<BotDto> getBots() {
+    public Flux<BotDto> getBots() {
 
-        return List.of();
+        return Flux.empty();
         /** Comment for correct work into env without mattermost
         return outboundWebClient.sendGetRequestWithListResponse(
                 mattermostWebClient,
@@ -46,6 +51,14 @@ public class MattermostClient {
                 BotDto.class
         );
          */
+    }
+
+    private BotDto createNewBotDto(BotDto createRequest) {
+
+        createRequest.setUserId(UUID.randomUUID().toString());
+        createRequest.setCreateAt(BigInteger.valueOf(System.currentTimeMillis()));
+
+        return createRequest;
     }
 
 }

@@ -49,12 +49,7 @@ public class BotsController {
             @Parameter(name = "createBotBody", description = "Object with the bot info") @RequestBody BotDto createDto,
             ServerWebExchange exchange
     ) {
-        return botsService.createBot(
-                        createDto.getOwnerId(),
-                        createDto.getUsername(),
-                        createDto.getDisplayName(),
-                        createDto.getDescription()
-                )
+        return botsService.createBot(createDto)
                 .map(ResponseEntity::ok);
     }
 
@@ -77,13 +72,7 @@ public class BotsController {
             @Parameter(name = "updateBotBody", description = "Object with the bot info") @RequestBody BotDto updateDto,
             ServerWebExchange exchange
     ) {
-        return botsService.updateBotInfo(
-                        updateDto.getOwnerId(),
-                        updateDto.getUsername(),
-                        updateDto.getDisplayName(),
-                        updateDto.getDescription(),
-                        updateDto.getUpdateAt()
-                )
+        return botsService.updateBotInfo(updateDto)
                 .map(ResponseEntity::ok);
     }
 
