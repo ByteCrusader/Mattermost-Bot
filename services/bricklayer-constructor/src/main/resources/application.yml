@@ -43,3 +43,9 @@ management:
       enabled: false
   security:
     enable: false
+
+strg:
+  scheme: "http"
+  host: "bricklayer-storage"
+  connectionTimeout: 60000
+  receiveTimeout: 60000
