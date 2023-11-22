@@ -49,10 +49,12 @@ public class BotsController {
             @Parameter(name = "createBotBody", description = "Object with the bot info") @RequestBody BotDto createDto,
             ServerWebExchange exchange
     ) {
-        return exchange.getPrincipal()
-                .flatMap(principal -> botsService.createBot(
-                        principal, createDto.getUsername(), createDto.getDisplayName(), createDto.getDescription()
-                ))
+        return botsService.createBot(
+                        createDto.getOwnerId(),
+                        createDto.getUsername(),
+                        createDto.getDisplayName(),
+                        createDto.getDescription()
+                )
                 .map(ResponseEntity::ok);
     }
 
@@ -75,14 +77,13 @@ public class BotsController {
             @Parameter(name = "updateBotBody", description = "Object with the bot info") @RequestBody BotDto updateDto,
             ServerWebExchange exchange
     ) {
-        return exchange.getPrincipal()
-                .flatMap(principal -> botsService.updateBotInfo(
-                        principal,
+        return botsService.updateBotInfo(
+                        updateDto.getOwnerId(),
                         updateDto.getUsername(),
                         updateDto.getDisplayName(),
                         updateDto.getDescription(),
                         updateDto.getUpdateAt()
-                ))
+                )
                 .map(ResponseEntity::ok);
     }
 
@@ -102,11 +103,11 @@ public class BotsController {
             }
     )
     public Mono<ResponseEntity<BotDto>> deleteBot(
+            @Parameter(name = "ownerId", description = "Name of bot's owner", in = ParameterIn.QUERY) @PathVariable String ownerId,
             @Parameter(name = "username", description = "Name of bot", in = ParameterIn.QUERY) @PathVariable String username,
             ServerWebExchange exchange
     ) {
-        return exchange.getPrincipal()
-                .flatMap(principal -> botsService.deleteBot(principal, username))
+        return botsService.deleteBot(ownerId, username)
                 .map(ResponseEntity::ok);
     }
 
@@ -126,11 +127,11 @@ public class BotsController {
             }
     )
     public Mono<ResponseEntity<BotDto>> getBot(
+            @Parameter(name = "ownerId", description = "Name of bot's owner", in = ParameterIn.QUERY) @PathVariable String ownerId,
             @Parameter(name = "username", description = "Name of bot", in = ParameterIn.QUERY) @PathVariable String username,
             ServerWebExchange exchange
     ) {
-        return exchange.getPrincipal()
-                .flatMap(principal -> botsService.getBotInfo(principal, username))
+        return botsService.getBotInfo(ownerId, username)
                 .map(ResponseEntity::ok);
     }
 

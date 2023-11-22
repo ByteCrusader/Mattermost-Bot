@@ -13,7 +13,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigInteger;
-import java.security.Principal;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -26,25 +25,25 @@ public class BotsServiceImpl implements BotsService {
     private final BotEntityToDtoConverter botConverter;
 
     @Override
-    public Mono<BotDto> createBot(Principal principal, String username, String displayName, String description) {
+    public Mono<BotDto> createBot(String ownerId, String username, String displayName, String description) {
 
         return botRepository.save(
                         createNewBotEntity(
-                                username, displayName, description, principal.getName()
+                                username, displayName, description, ownerId
                         )
                 )
                 .map(botConverter::convert);
     }
 
     @Override
-    public Mono<BotDto> updateBotInfo(Principal principal,
+    public Mono<BotDto> updateBotInfo(String ownerId,
                                       String username,
                                       String displayName,
                                       String description,
                                       BigInteger updateAt) {
 
         return botRepository.findByUsername(username)
-                .filter(entity -> checkUser(principal, entity.getOwnerId()))
+                .filter(entity -> checkUser(ownerId, entity.getOwnerId()))
                 .filter(botEntity -> checkBotVersion(botEntity, updateAt))
                 .map(botEntity -> updateBotInfo(botEntity, displayName, description))
                 .flatMap(botRepository::save)
@@ -52,10 +51,10 @@ public class BotsServiceImpl implements BotsService {
     }
 
     @Override
-    public Mono<BotDto> deleteBot(Principal principal, String username) {
+    public Mono<BotDto> deleteBot(String ownerId, String username) {
 
         return botRepository.findByUsername(username)
-                .filter(entity -> checkUser(principal, entity.getOwnerId()))
+                .filter(entity -> checkUser(ownerId, entity.getOwnerId()))
                 .filter(this::checkBotAvailability)
                 .map(this::deleteBot)
                 .flatMap(botRepository::save)
@@ -63,10 +62,10 @@ public class BotsServiceImpl implements BotsService {
     }
 
     @Override
-    public Mono<BotDto> getBotInfo(Principal principal, String username) {
+    public Mono<BotDto> getBotInfo(String ownerId, String username) {
 
         return botRepository.findByUsername(username)
-                .filter(entity -> checkUser(principal, entity.getOwnerId()))
+                .filter(entity -> checkUser(ownerId, entity.getOwnerId()))
                 .filter(entity -> Objects.isNull(entity.getDeleteAt()))
                 .map(botConverter::convert);
     }
@@ -105,9 +104,9 @@ public class BotsServiceImpl implements BotsService {
         return entity;
     }
 
-    private boolean checkUser(Principal principal, String ownerId) {
+    private boolean checkUser(String principal, String ownerId) {
 
-        return StringUtils.equals(principal.getName(), ownerId);
+        return StringUtils.equals(principal, ownerId);
     }
 
     private boolean checkBotVersion(BotEntity entity, BigInteger updateAt) {
