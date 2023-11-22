@@ -9,6 +9,6 @@ public class RouteConstants {
      * Bots controller info
      */
     public static final String BOTS_API = "/bot";
-    public static final String IDENTITY_API = "/{username}";
+    public static final String IDENTITY_API = "/{ownerId}/{username}";
 
 }

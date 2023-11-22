@@ -9,7 +9,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigInteger;
-import java.security.Principal;
 
 @Slf4j
 @Service
@@ -17,14 +16,14 @@ import java.security.Principal;
 public class BotsServiceImpl implements BotsService {
 
     @Override
-    public Mono<BotDto> createBot(Principal principal, String username, String displayName, String description) {
+    public Mono<BotDto> createBot(String ownerId, String username, String displayName, String description) {
 
         return Mono.empty(); //todo add request into bot constructor
 
     }
 
     @Override
-    public Mono<BotDto> updateBotInfo(Principal principal,
+    public Mono<BotDto> updateBotInfo(String ownerId,
                                       String username,
                                       String displayName,
                                       String description,
@@ -34,13 +33,13 @@ public class BotsServiceImpl implements BotsService {
     }
 
     @Override
-    public Mono<BotDto> deleteBot(Principal principal, String username) {
+    public Mono<BotDto> deleteBot(String ownerId, String username) {
 
         return Mono.empty(); //todo add request into bot constructor
     }
 
     @Override
-    public Mono<BotDto> getBotInfo(Principal principal, String username) {
+    public Mono<BotDto> getBotInfo(String ownerId, String username) {
 
         return Mono.empty(); //todo add request into bot constructor
     }
