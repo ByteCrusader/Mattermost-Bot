@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Client for mattermost service
@@ -24,6 +23,8 @@ public class MattermostClient {
 
     public BotDto createBot(BotDto createRequest) {
 
+        return createRequest;
+        /** Comment for correct work into env without mattermost
         return outboundWebClient.sendPostRequest(
                 mattermostWebClient,
                 BOTS_BASE_ROUTE,
@@ -31,16 +32,20 @@ public class MattermostClient {
                 createRequest,
                 BotDto.class
         );
+         */
     }
 
     public List<BotDto> getBots() {
 
+        return List.of();
+        /** Comment for correct work into env without mattermost
         return outboundWebClient.sendGetRequestWithListResponse(
                 mattermostWebClient,
                 BOTS_BASE_ROUTE,
                 Map.of(),
                 BotDto.class
         );
+         */
     }
 
 }
