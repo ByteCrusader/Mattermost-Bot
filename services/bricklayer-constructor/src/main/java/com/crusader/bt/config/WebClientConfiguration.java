@@ -1,7 +1,9 @@
 package com.crusader.bt.config;
 
+import com.crusader.bt.client.MattermostClient;
 import com.crusader.bt.client.filter.LoggingClientFilter;
 import com.crusader.bt.config.properties.AbstractWebClientProperties;
+import com.crusader.bt.config.properties.MattermostProperties;
 import com.crusader.bt.config.properties.StorageProperties;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
@@ -37,6 +39,21 @@ public class WebClientConfiguration {
         return WebClient.builder()
                 .clientConnector(configClientConnection(storageProperties))
                 .baseUrl(createBaseUrl(storageProperties))
+                .filter(loggingClientFilter.logRequestFunction())
+                .filter(loggingClientFilter.logResponseHttpStatusFunction())
+                .build();
+    }
+
+    /**
+     * Mattermost Web Client
+     */
+    @Bean("mattermostClient")
+    WebClient webClient(MattermostProperties mattermostProperties,
+                        LoggingClientFilter loggingClientFilter) {
+
+        return WebClient.builder()
+                .clientConnector(configClientConnection(mattermostProperties))
+                .baseUrl(createBaseUrl(mattermostProperties))
                 .filter(loggingClientFilter.logRequestFunction())
                 .filter(loggingClientFilter.logResponseHttpStatusFunction())
                 .build();

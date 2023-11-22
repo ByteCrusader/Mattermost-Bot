@@ -49,3 +49,10 @@ strg:
   host: "bricklayer-storage"
   connectionTimeout: 60000
   receiveTimeout: 60000
+
+mtmt:
+  scheme: "http"
+  host: "localhost"
+  port: "8065"
+  connectionTimeout: 60000
+  receiveTimeout: 60000
