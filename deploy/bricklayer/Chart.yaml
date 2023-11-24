@@ -22,3 +22,27 @@ version: 0.1.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 appVersion: "1.16.0"
+
+dependencies:
+  - name: postgresql
+    version: 11.x.x
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled
+    tags:
+      - bricklayer-database
+  - name: bff
+    condition: bff.enable
+    tags:
+      - bricklayer-bff
+  - name: constructor
+    condition: constructor.enable
+    tags:
+      - bricklayer-constructor
+  - name: storage
+    condition: storage.enable
+    tags:
+      - bricklayer-storage
+  - name: user
+    condition: user.enable
+    tags:
+      - bricklayer-user
