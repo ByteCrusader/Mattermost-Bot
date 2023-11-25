@@ -5,57 +5,144 @@ metadata:
   labels:
     {{- include "storage.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
-  {{- end }}
+  # Maximum value of replicas
+  replicas: {{ .Values.global.replicaCount }}
   selector:
     matchLabels:
       {{- include "storage.selectorLabels" . | nindent 6 }}
+  strategy:
+    # https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+    type: RollingUpdate
+    rollingUpdate:
+      # The number of pods that can-be created during an upgrade is over the limit during an upgrade
+      maxSurge: 1
+      # The maximum number of pods that can be unavailable during an upgrade
+      maxUnavailable: 0
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       labels:
-        {{- include "storage.selectorLabels" . | nindent 8 }}
+        {{- include "storage.labels" . | nindent 8 }}
     spec:
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      serviceAccountName: {{ include "storage.serviceAccountName" . }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
+          image: "{{ .Values.constructor.image.repository }}"
+          imagePullPolicy: "{{ .Values.global.image.pullPolicy }}"
+          # Security settings for k8s
+          # Container setting
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+            # Example of ID into allowed range
+            runAsGroup: 2112
+            # Example of ID into allowed range
+            runAsUser: 10000
+            # Force drop all capability
+            capabilities:
+              drop: [ "ALL" ]
+            # Be sure to set this parameter to true if we don't want to allow write into pod root system
+            readOnlyRootFilesystem: true
+          command:
+            - java
+            - -server
+            # memory settings
+            - -XX:MinRAMPercentage=75.0
+            - -XX:MaxRAMPercentage=75.0
+            - -XX:InitialRAMPercentage=50.0
+            # GC settings
+            - -XX:+AlwaysActAsServerClassMachine
+            - -XX:+DisableExplicitGC
+            # profiler settings
+            - -Dcom.sun.management.jmxremote=true
+            - -Dcom.sun.management.jmxremote.local.only=false
+            - -Dcom.sun.management.jmxremote.ssl=false
+            - -Dcom.sun.management.jmxremote.authenticate=false
+            - -Dcom.sun.management.jmxremote.port=$(JMX_PORT)
+            - -Dcom.sun.management.jmxremote.rmi.port=$(JMX_PORT)
+            - -Djava.rmi.server.hostname=127.0.0.1
+            # heap dump settings
+            - -XX:+HeapDumpOnOutOfMemoryError
+            - -XX:+ExitOnOutOfMemoryError
+            - -XX:HeapDumpPath=/var/crash/java.hprof
+            - -XX:OnOutOfMemoryError="mv /var/crash/java.hprof /var/crash/heapdump.hprof"
+            # other
+            - -XX:NativeMemoryTracking=summary
+            - -Dfile.encoding=UTF-8
+            - org.springframework.boot.loader.JarLauncher
+          resources:
+            # Minimum requirements for node resources to startup a container
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            # Maximum requirements for node resources to startup a container
+            limits:
+              memory: "1024Mi"
+              cpu: "500m"
+          # List of ports to expose from the container
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: 8080
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
+            - name: actuator
+              containerPort: 9000
+              protocol: TCP
+          # A check that tells Kubernetes that a pod can be included in the balancing (only relevant if the service is running over HTTP), if it is not performed - Kubernetes removes the pod from balancing
           readinessProbe:
             httpGet:
-              path: /
-              port: http
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+              path: /actuator/health
+              port: 9000
+              scheme: HTTP
+            initialDelaySeconds: 20
+            failureThreshold: 3
+          # A check that allows Kubernetes to determine if the pod and the application in it are alive, in case it is not running - Kubernetes RESTART under
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 9000
+              scheme: HTTP
+            initialDelaySeconds: 15
+            failureThreshold: 5
+          # A check that is required if your application takes a long time to start. If this check is defined, then the liveness and readiness checks will start only after it has been successfully passed.
+          #startupProbe: ...
+          # Pod volumes to mount into the container's filesystem
+          volumeMounts:
+            - name: application-conf-volume
+              mountPath: /app/config
+            - name: application-files-volume
+              mountPath: /tmp
+          # Environment keys for container
+          env:
+            - name: JMX_PORT
+              value: "8090"
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "storage.fullname" . }}
+                  key: DB_HOST
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "storage.fullname" . }}
+                  key: DB_NAME
+            - name: MASTER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "storage.fullname" . }}
+                  key: MASTER_PASSWORD
+            - name: MASTER_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "storage.fullname" . }}
+                  key: MASTER_USERNAME
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "storage.fullname" . }}
+                  key: DB_PORT
+      # Data for correct pull image from private registry
+      #imagePullSecrets:
+      #  - name: user
+      # List of volumes that can be mounted by containers belonging to the pod
+      volumes:
+        - name: application-conf-volume
+          configMap:
+            name: {{ .Chart.Name }}
+        - name: application-files-volume
+          emptyDir: { }

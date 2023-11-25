@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "storage.fullname" . }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "storage.fullname" . }}
+type: Opaque
+data:
+  DB_HOST: {{ printf "%s-postgresql" .Chart.Name  | b64enc | quote }}
+  DB_NAME: {{ .Values.postgresql.auth.database  | b64enc | quote }}
+  MASTER_PASSWORD: {{ .Values.postgresql.auth.password  | b64enc | quote }}
+  MASTER_USERNAME: {{ .Values.postgresql.auth.username  | b64enc | quote }}
+  DB_PORT: {{ .Values.postgresql.servicePort  | b64enc | quote }}
+
