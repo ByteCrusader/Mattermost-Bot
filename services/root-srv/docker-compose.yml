@@ -5,7 +5,7 @@ services:
     image: "bytecrusader/mattermost-bot:v.0.0.1"
     build:
       dockerfile: Dockerfile
-      context: .
+      context: ../..
     ports:
       - "8080:8080"
       - "9000:9000"
