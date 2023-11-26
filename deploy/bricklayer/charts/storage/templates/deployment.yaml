@@ -6,7 +6,7 @@ metadata:
     {{- include "storage.labels" . | nindent 4 }}
 spec:
   # Maximum value of replicas
-  replicas: {{ .Values.global.replicaCount }}
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       {{- include "storage.selectorLabels" . | nindent 6 }}
@@ -25,8 +25,8 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.constructor.image.repository }}"
-          imagePullPolicy: "{{ .Values.global.image.pullPolicy }}"
+          image: "{{ .Values.image.repository }}"
+          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
           # Security settings for k8s
           # Container setting
           securityContext:
@@ -78,7 +78,7 @@ spec:
           # List of ports to expose from the container
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: 80
               protocol: TCP
             - name: actuator
               containerPort: 9000

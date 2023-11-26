@@ -9,5 +9,9 @@ metadata:
   name: {{ include "user.fullname" . }}
 type: Opaque
 data:
+  DB_HOST: { { printf "bricklayer-postgresql"  | b64enc | quote } }
+  DB_NAME: { { .Values.global.postgresql.auth.database  | b64enc | quote } }
+  MASTER_PASSWORD: { { .Values.global.postgresql.auth.password  | b64enc | quote } }
+  MASTER_USERNAME: { { .Values.global.postgresql.auth.username  | b64enc | quote } }
+  DB_PORT: { { .Values.global.postgresql.servicePort  | b64enc | quote } }
   JSON_TOKEN_SECRET: {{ .Values.global.jwt.secret  | b64enc | quote }}
-

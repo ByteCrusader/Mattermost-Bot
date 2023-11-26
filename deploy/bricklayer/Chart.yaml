@@ -27,22 +27,22 @@ dependencies:
   - name: postgresql
     version: 11.x.x
     repository: https://charts.bitnami.com/bitnami
-    condition: postgresql.enabled
+    condition: global.postgresql.enabled
     tags:
-      - bricklayer-database
+      - bricklayer-postgresql
   - name: bff
-    condition: bff.enable
+    condition: bff.enabled
     tags:
       - bricklayer-bff
   - name: constructor
-    condition: constructor.enable
+    condition: constructor.enabled
     tags:
       - bricklayer-constructor
   - name: storage
-    condition: storage.enable
+    condition: storage.enabled
     tags:
       - bricklayer-storage
   - name: user
-    condition: user.enable
+    condition: user.enabled
     tags:
       - bricklayer-user

@@ -20,13 +20,13 @@ spec:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: storage-postgresql
+                  name: bricklayer-postgresql
                   key: postgres-password
           command:
             - sh
             - "-c"
             - |
-              psql postgres://pstgrs:psswrd@storage-postgresql/bot <<'EOF'
+              psql postgres://pstgrs:psswrd@bricklayer-postgresql/bot <<'EOF'
                 create table if not exists bots (
                 id serial primary key,
                 user_id varchar not null,
