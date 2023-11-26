@@ -31,18 +31,22 @@ dependencies:
     tags:
       - bricklayer-postgresql
   - name: bff
+    version: 0.1.0
     condition: bff.enabled
     tags:
       - bricklayer-bff
   - name: constructor
+    version: 0.1.0
     condition: constructor.enabled
     tags:
       - bricklayer-constructor
   - name: storage
+    version: 0.1.0
     condition: storage.enabled
     tags:
       - bricklayer-storage
   - name: user
+    version: 0.1.0
     condition: user.enabled
     tags:
       - bricklayer-user

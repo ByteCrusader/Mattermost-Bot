@@ -1,0 +1,18 @@
+dependencies:
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 11.9.13
+- name: bff
+  repository: ""
+  version: 0.1.0
+- name: constructor
+  repository: ""
+  version: 0.1.0
+- name: storage
+  repository: ""
+  version: 0.1.0
+- name: user
+  repository: ""
+  version: 0.1.0
+digest: sha256:aa2ac15d62da5f59c5928d9cc3c64cd62bd2c6b4e996645cef3c82dd9e090f5d
+generated: "2023-11-26T21:48:52.462081+03:00"
