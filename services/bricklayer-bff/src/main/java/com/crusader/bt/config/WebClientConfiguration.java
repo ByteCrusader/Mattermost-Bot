@@ -30,7 +30,7 @@ public class WebClientConfiguration {
     /**
      * Constructor service Web Client
      */
-    @Bean("constructorClient")
+    @Bean("constructorWebClient")
     WebClient webClient(ConstructorProperties constructorProperties,
                         LoggingClientFilter loggingClientFilter) {
 

@@ -1,6 +1,5 @@
 package com.crusader.bt.config;
 
-import com.crusader.bt.client.MattermostClient;
 import com.crusader.bt.client.filter.LoggingClientFilter;
 import com.crusader.bt.config.properties.AbstractWebClientProperties;
 import com.crusader.bt.config.properties.MattermostProperties;
@@ -32,9 +31,9 @@ public class WebClientConfiguration {
     /**
      * Storage service Web Client
      */
-    @Bean("storageClient")
-    WebClient webClient(StorageProperties storageProperties,
-                        LoggingClientFilter loggingClientFilter) {
+    @Bean("storageWebClient")
+    WebClient storageWebClient(StorageProperties storageProperties,
+                               LoggingClientFilter loggingClientFilter) {
 
         return WebClient.builder()
                 .clientConnector(configClientConnection(storageProperties))
@@ -47,9 +46,9 @@ public class WebClientConfiguration {
     /**
      * Mattermost Web Client
      */
-    @Bean("mattermostClient")
-    WebClient webClient(MattermostProperties mattermostProperties,
-                        LoggingClientFilter loggingClientFilter) {
+    @Bean("mattermostWebClient")
+    WebClient mattermostWebClient(MattermostProperties mattermostProperties,
+                                  LoggingClientFilter loggingClientFilter) {
 
         return WebClient.builder()
                 .clientConnector(configClientConnection(mattermostProperties))
