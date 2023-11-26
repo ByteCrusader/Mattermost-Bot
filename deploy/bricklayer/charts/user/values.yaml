@@ -61,14 +61,14 @@ ingress:
           pathType: ImplementationSpecific
           backend:
             service:
-              name: mattermost-bot
+              name: bricklayer-user
               port:
                 number: 8080
         - path: /user/actuator
           pathType: ImplementationSpecific
           backend:
             service:
-              name: mattermost-bot
+              name: bricklayer-user
               port:
                 number: 9000
   tls: []

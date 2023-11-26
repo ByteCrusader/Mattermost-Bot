@@ -9,7 +9,7 @@ global:
   postgresql:
     enabled: true
     auth:
-      database: "bot"
+      database: "bricklayer"
       password: "psswrd"
       username: "pstgrs"
     servicePort: "5432"

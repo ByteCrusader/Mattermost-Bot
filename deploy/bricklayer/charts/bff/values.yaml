@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: bytecrusader/bricklayer-bot
+  repository: bytecrusader/bricklayer-bff
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""

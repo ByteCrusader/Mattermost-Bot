@@ -143,6 +143,6 @@ spec:
       volumes:
         - name: application-conf-volume
           configMap:
-            name: {{ .Chart.Name }}
+            name: {{ include "bff.fullname" . }}
         - name: application-files-volume
           emptyDir: { }
