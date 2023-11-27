@@ -56,3 +56,9 @@ mtmt:
   port: "8065"
   connectionTimeout: 60000
   receiveTimeout: 60000
+
+eng:
+  scheme: "http"
+  host: "bricklayer-engine"
+  connectionTimeout: 60000
+  receiveTimeout: 60000

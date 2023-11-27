@@ -2,6 +2,7 @@ package com.crusader.bt.config;
 
 import com.crusader.bt.client.filter.LoggingClientFilter;
 import com.crusader.bt.config.properties.AbstractWebClientProperties;
+import com.crusader.bt.config.properties.EngineProperties;
 import com.crusader.bt.config.properties.MattermostProperties;
 import com.crusader.bt.config.properties.StorageProperties;
 import io.netty.channel.ChannelOption;
@@ -25,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 @Setter
 @Configuration
 @RequiredArgsConstructor
-@EnableConfigurationProperties({StorageProperties.class})
+@EnableConfigurationProperties({StorageProperties.class, MattermostProperties.class, EngineProperties.class})
 public class WebClientConfiguration {
 
     /**
@@ -53,6 +54,21 @@ public class WebClientConfiguration {
         return WebClient.builder()
                 .clientConnector(configClientConnection(mattermostProperties))
                 .baseUrl(createBaseUrl(mattermostProperties))
+                .filter(loggingClientFilter.logRequestFunction())
+                .filter(loggingClientFilter.logResponseHttpStatusFunction())
+                .build();
+    }
+
+    /**
+     * Engine service Web Client
+     */
+    @Bean("engineWebClient")
+    WebClient engineWebClient(EngineProperties engineProperties,
+                              LoggingClientFilter loggingClientFilter) {
+
+        return WebClient.builder()
+                .clientConnector(configClientConnection(engineProperties))
+                .baseUrl(createBaseUrl(engineProperties))
                 .filter(loggingClientFilter.logRequestFunction())
                 .filter(loggingClientFilter.logResponseHttpStatusFunction())
                 .build();
