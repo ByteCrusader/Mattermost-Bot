@@ -20,6 +20,8 @@ bff:
   enabled: true
 constructor:
   enabled: true
+engine:
+  enabled: true
 storage:
   enabled: true
 user:

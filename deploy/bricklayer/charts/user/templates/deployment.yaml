@@ -123,6 +123,6 @@ spec:
       volumes:
         - name: application-conf-volume
           configMap:
-            name: {{ include "bff.fullname" . }}
+            name: {{ include "user.fullname" . }}
         - name: application-files-volume
           emptyDir: { }

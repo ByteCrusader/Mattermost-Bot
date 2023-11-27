@@ -1,5 +1,5 @@
 apiVersion: v2
-name: bricklayer
+name: engine
 description: A Helm chart for Kubernetes
 
 # A chart can be either an 'application' or a 'library' chart.
@@ -22,36 +22,3 @@ version: 0.1.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 appVersion: "1.16.0"
-
-dependencies:
-  - name: postgresql
-    version: 11.x.x
-    repository: https://charts.bitnami.com/bitnami
-    condition: global.postgresql.enabled
-    tags:
-      - bricklayer-postgresql
-  - name: bff
-    version: 0.1.0
-    condition: bff.enabled
-    tags:
-      - bricklayer-bff
-  - name: constructor
-    version: 0.1.0
-    condition: constructor.enabled
-    tags:
-      - bricklayer-constructor
-  - name: engine
-    version: 0.1.0
-    condition: engine.enabled
-    tags:
-      - bricklayer-engine
-  - name: storage
-    version: 0.1.0
-    condition: storage.enabled
-    tags:
-      - bricklayer-storage
-  - name: user
-    version: 0.1.0
-    condition: user.enabled
-    tags:
-      - bricklayer-user

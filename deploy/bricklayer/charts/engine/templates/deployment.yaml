@@ -1,15 +1,15 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "constructor.fullname" . }}
+  name: {{ include "engine.fullname" . }}
   labels:
-    {{- include "constructor.labels" . | nindent 4 }}
+    {{- include "engine.labels" . | nindent 4 }}
 spec:
   # Maximum value of replicas
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "constructor.selectorLabels" . | nindent 6 }}
+      {{- include "engine.selectorLabels" . | nindent 6 }}
   strategy:
     # https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
     type: RollingUpdate
@@ -21,7 +21,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "constructor.labels" . | nindent 8 }}
+        {{- include "engine.labels" . | nindent 8 }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
@@ -118,6 +118,6 @@ spec:
       volumes:
         - name: application-conf-volume
           configMap:
-            name: {{ include "constructor.fullname" . }}
+            name: {{ include "engine.fullname" . }}
         - name: application-files-volume
           emptyDir: { }
