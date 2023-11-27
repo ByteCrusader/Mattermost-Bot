@@ -61,14 +61,14 @@ ingress:
           pathType: ImplementationSpecific
           backend:
             service:
-              name: bff
+              name: bricklayer-bff
               port:
                 number: 8080
         - path: /api/actuator
           pathType: ImplementationSpecific
           backend:
             service:
-              name: bff
+              name: bricklayer-bff
               port:
                 number: 9000
   tls: []
