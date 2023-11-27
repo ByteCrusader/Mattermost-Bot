@@ -1,0 +1,300 @@
+{
+	"info": {
+		"_postman_id": "a7d20eec-97b7-4d67-ae30-03db7da662eb",
+		"name": "Mattermost k8s sage pattern",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7327175"
+	},
+	"item": [
+		{
+			"name": "Регистрация пользователя",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"fusername\", pm.variables.replaceIn('{{$randomUserName}}'))",
+							"pm.collectionVariables.set(\"fpassword\", pm.variables.replaceIn('{{$randomPassword}}'))"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\":\"{{fusername}}\",\n    \"password\":\"{{fpassword}}\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/register",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Логин пользователя",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.collectionVariables.set(\"token\", jsonData.access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"client_id\":\"{{fusername}}\",\n    \"client_secret\":\"{{fpassword}}\",\n    \"grant_type\":\"client_credentials\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/user/token",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Проверить отсутствие данных о боте для пользователя",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Проверяем отсутствие данных для пользователя\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.withBody;",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/bot/someBotName",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"bot",
+						"someBotName"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавить бота для пользователя",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"fbotname\", pm.variables.replaceIn('{{$randomUserName}}'))",
+							"pm.collectionVariables.set(\"fbotdname\", pm.variables.replaceIn('{{$randomUserName}}'))",
+							"pm.collectionVariables.set(\"fbotdisc\", pm.variables.replaceIn('{{$randomBs}}'))"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Проверяем отбивку от одного из сервисов\", function () {",
+							"    pm.response.to.have.status(500);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{fbotname}}\",\n    \"display_name\": \"{{fbotdname}}\",\n    \"description\": \"{{fbotdisc}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/bot",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"bot"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Проверяем данные о боте для пользователя",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Проверяем удаление сохраненных данных о боте для пользователя\", function () {",
+							"    pm.response.to.have.status(200);",
+							"    pm.response.to.not.be.withBody;",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/bot/{{fbotname}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"bot",
+						"{{fbotname}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"tests[\"[INFO] Request: \" + (('data' in request) ? request['data'] : '') ] = true;",
+					"tests[\"[INFO] Response: \" + responseBody] = true;"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "fpassword",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "fusername",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "fbotname",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "fbotdname",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "fbotdisc",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "susername",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "spassword",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "baseUrl",
+			"value": "http://arch.homework",
+			"type": "string"
+		}
+	]
+}
