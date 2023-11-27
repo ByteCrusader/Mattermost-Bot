@@ -57,14 +57,14 @@ ingress:
   hosts:
     - host: arch.homework
       paths:
-        - path: /api
+        - path: /bot
           pathType: ImplementationSpecific
           backend:
             service:
               name: bricklayer-bff
               port:
                 number: 8080
-        - path: /api/actuator
+        - path: /bot/actuator
           pathType: ImplementationSpecific
           backend:
             service:
