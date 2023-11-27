@@ -1,0 +1,7 @@
+Init k8s app:
+
+1. helm install bricklayer ./
+
+Clean k8s app:
+
+1. helm uninstall bricklayer
