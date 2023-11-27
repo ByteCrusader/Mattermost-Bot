@@ -30,6 +30,11 @@ public class BotsServiceImpl implements BotsService {
                 .flatMap(pair ->
                         engineClient.createJob(pair.getRight())
                                 .map(statusDto -> pair.getLeft())
+                )
+                .doOnError(ex ->
+                        storageClient.deleteBot(
+                                createRequest.getOwnerId(), createRequest.getUsername()
+                        )
                 );
     }
 
