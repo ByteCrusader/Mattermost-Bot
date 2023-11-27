@@ -9,6 +9,7 @@ rootProject.name = "$projectName"
 
 include("services:bricklayer-bff")
 include("services:bricklayer-constructor")
+include("services:bricklayer-engine")
 include("services:bricklayer-storage")
 include("services:bricklayer-user")
 include("services:root-srv")
