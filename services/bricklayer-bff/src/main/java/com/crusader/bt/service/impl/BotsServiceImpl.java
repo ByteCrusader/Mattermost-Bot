@@ -1,7 +1,9 @@
 package com.crusader.bt.service.impl;
 
 import com.crusader.bt.client.ConstructorClient;
+import com.crusader.bt.config.properties.KafkaProperties;
 import com.crusader.bt.dto.BotDto;
+import com.crusader.bt.message.MessageProducer;
 import com.crusader.bt.service.BotsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +18,7 @@ import java.security.Principal;
 public class BotsServiceImpl implements BotsService {
 
     private final ConstructorClient constructorClient;
+    private final MessageProducer messageProducer;
 
     @Override
     public Mono<BotDto> createBot(Principal principal, BotDto createRequest) {
@@ -23,7 +26,11 @@ public class BotsServiceImpl implements BotsService {
         return Mono.just(
                         enrichBotInfo(principal, createRequest)
                 )
-                .flatMap(constructorClient::createBot);
+                .flatMap(constructorClient::createBot)
+                .map(bto -> {
+                    messageProducer.sendSingleMessage(bto, "create");
+                    return bto;
+                });
     }
 
     @Override

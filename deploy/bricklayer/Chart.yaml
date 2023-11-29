@@ -30,6 +30,12 @@ dependencies:
     condition: global.postgresql.enabled
     tags:
       - bricklayer-postgresql
+  - name: kafka
+    version: 26.x.x
+    repository: https://charts.bitnami.com/bitnami
+    condition: global.kafka.enabled
+    tags:
+      - bricklayer-kafka
   - name: bff
     version: 0.1.0
     condition: bff.enabled

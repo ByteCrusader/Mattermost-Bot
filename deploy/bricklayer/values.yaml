@@ -15,6 +15,9 @@ global:
     servicePort: "5432"
   jwt:
     secret: "B#PmRL5mJPF7J2EJK4X$Y|ikmegMrJ4TPNBh|{zgTPnDCWwFLTFY}4lgN?*iul{F|wUZdsc#PQ@KYX36JSNZ17r8OR7DfH7n?4G"
+  mq:
+    user: "bricklayer"
+    password: "password"
 
 bff:
   enabled: true
@@ -26,3 +29,11 @@ storage:
   enabled: true
 user:
   enabled: true
+kafka:
+  enabled: true
+  sasl:
+    client:
+      users:
+        - bricklayer
+      passwords:
+        - password

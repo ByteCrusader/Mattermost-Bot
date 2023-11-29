@@ -10,4 +10,6 @@ metadata:
 type: Opaque
 data:
   JSON_TOKEN_SECRET: {{ .Values.global.jwt.secret  | b64enc | quote }}
+  MQ_USERNAME: {{ .Values.global.mq.user  | b64enc | quote }}
+  MQ_PASSWORD: {{ .Values.global.mq.password  | b64enc | quote }}
 

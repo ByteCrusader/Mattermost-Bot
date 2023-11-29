@@ -34,6 +34,9 @@ dependencies {
     compileOnly 'io.jsonwebtoken:jjwt-api:0.11.5'
     // Metric
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+    // Kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'io.projectreactor.kafka:reactor-kafka'
     //Utils
     implementation("org.apache.commons:commons-lang3")
     compileOnly("org.projectlombok:lombok")

@@ -2,10 +2,16 @@ dependencies:
 - name: postgresql
   repository: https://charts.bitnami.com/bitnami
   version: 11.9.13
+- name: kafka
+  repository: https://charts.bitnami.com/bitnami
+  version: 26.4.2
 - name: bff
   repository: ""
   version: 0.1.0
 - name: constructor
+  repository: ""
+  version: 0.1.0
+- name: engine
   repository: ""
   version: 0.1.0
 - name: storage
@@ -14,5 +20,5 @@ dependencies:
 - name: user
   repository: ""
   version: 0.1.0
-digest: sha256:aa2ac15d62da5f59c5928d9cc3c64cd62bd2c6b4e996645cef3c82dd9e090f5d
-generated: "2023-11-26T21:48:52.462081+03:00"
+digest: sha256:9b0752d3fcd2343e31266c13e1f6c278c54bfe21a8cf7e40b6b7a5c3402574d8
+generated: "2023-11-28T20:07:07.446418+03:00"

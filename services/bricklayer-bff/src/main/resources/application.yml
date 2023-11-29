@@ -52,3 +52,17 @@ cnct:
   host: "bricklayer-constructor"
   connectionTimeout: 60000
   receiveTimeout: 60000
+
+kafka:
+  enabled: true
+  bootstrap: "bricklayer-kafka:9092"
+  topic: "bot-queue"
+  saslMechanism: "PLAIN"
+  securityProtocol: "SASL_PLAINTEXT"
+  saslJaasUsername: ${KAFKA_USER}
+  saslJaasPassword: ${KAFKA_PASSWORD}
+  sessionTimeoutMs: 60000
+  heartbeatIntervalMs: 5000
+  maxPollRecords: 5
+  maxPollIntervalMs: 500000
+  offsetReset: latest

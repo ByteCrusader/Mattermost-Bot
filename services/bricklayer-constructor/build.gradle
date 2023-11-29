@@ -29,6 +29,9 @@ dependencies {
     implementation "io.swagger.core.v3:swagger-annotations:$swaggerAnnotationsVersion"
     // Metric
     runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+    // Kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'io.projectreactor.kafka:reactor-kafka'
     //Utils
     implementation("org.apache.commons:commons-lang3")
     compileOnly("org.projectlombok:lombok")
