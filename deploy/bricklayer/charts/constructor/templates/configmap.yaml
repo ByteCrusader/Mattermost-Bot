@@ -8,4 +8,6 @@ kind: Secret
 metadata:
   name: {{ include "constructor.fullname" . }}
 type: Opaque
-
+data:
+  MQ_USERNAME: {{ .Values.global.mq.user  | b64enc | quote }}
+  MQ_PASSWORD: {{ .Values.global.mq.password  | b64enc | quote }}

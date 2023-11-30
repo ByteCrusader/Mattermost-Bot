@@ -136,6 +136,16 @@ spec:
                 secretKeyRef:
                   name: {{ include "storage.fullname" . }}
                   key: DB_PORT
+            - name: KAFKA_USER
+              valueFrom:
+                secretKeyRef:
+                  name: { { include "bff.fullname" . } }
+                  key: MQ_USERNAME
+            - name: KAFKA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: { { include "bff.fullname" . } }
+                  key: MQ_PASSWORD
       # Data for correct pull image from private registry
       #imagePullSecrets:
       #  - name: user

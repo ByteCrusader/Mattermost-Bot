@@ -1,8 +1,9 @@
 package com.crusader.bt.service.impl;
 
 import com.crusader.bt.client.ConstructorClient;
-import com.crusader.bt.config.properties.KafkaProperties;
 import com.crusader.bt.dto.BotDto;
+import com.crusader.bt.dto.MessageDto;
+import com.crusader.bt.mapper.MessageDtoMapper;
 import com.crusader.bt.message.MessageProducer;
 import com.crusader.bt.service.BotsService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ public class BotsServiceImpl implements BotsService {
 
     private final ConstructorClient constructorClient;
     private final MessageProducer messageProducer;
+    private final MessageDtoMapper messageDtoMapper;
 
     @Override
     public Mono<BotDto> createBot(Principal principal, BotDto createRequest) {
@@ -28,7 +30,8 @@ public class BotsServiceImpl implements BotsService {
                 )
                 .flatMap(constructorClient::createBot)
                 .map(bto -> {
-                    messageProducer.sendSingleMessage(bto, "create");
+                    MessageDto messageDto = messageDtoMapper.mapToMessageDto(bto);
+                    messageProducer.sendSingleMessage(messageDto, "create");
                     return bto;
                 });
     }
