@@ -14,6 +14,6 @@ data:
   MASTER_PASSWORD: {{ .Values.global.postgresql.auth.password  | b64enc | quote }}
   MASTER_USERNAME: {{ .Values.global.postgresql.auth.username  | b64enc | quote }}
   DB_PORT: {{ .Values.global.postgresql.servicePort  | b64enc | quote }}
-  MQ_USERNAME: { { .Values.global.mq.user  | b64enc | quote } }
-  MQ_PASSWORD: { { .Values.global.mq.password  | b64enc | quote } }
+  MQ_USERNAME: {{ .Values.global.mq.user  | b64enc | quote }}
+  MQ_PASSWORD: {{ .Values.global.mq.password  | b64enc | quote }}
 

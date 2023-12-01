@@ -8,14 +8,13 @@ import org.mapstruct.ReportingPolicy;
 import org.mapstruct.ValueMapping;
 
 @Mapper(componentModel = "spring",
-        unmappedSourcePolicy = ReportingPolicy.ERROR,
-        unmappedTargetPolicy = ReportingPolicy.ERROR)
+        unmappedSourcePolicy = ReportingPolicy.IGNORE,
+        unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface MessageDtoMapper {
 
     /**
      * Map Cron dto object into message dto
      */
-    @ValueMapping(source = MappingConstants.ANY_REMAINING, target = MappingConstants.NULL)
     MessageDto mapToMessageDto(CronDto botDto);
 
 }
