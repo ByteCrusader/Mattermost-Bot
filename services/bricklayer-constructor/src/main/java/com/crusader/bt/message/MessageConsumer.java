@@ -1,6 +1,8 @@
 package com.crusader.bt.message;
 
 import com.crusader.bt.dto.MessageDto;
+import com.crusader.bt.enums.MessageEventType;
+import com.crusader.bt.service.BotsService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -9,8 +11,12 @@ import org.apache.kafka.common.KafkaException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.NoTransactionException;
+import reactor.core.publisher.Mono;
 import reactor.kafka.receiver.KafkaReceiver;
+import reactor.kafka.receiver.ReceiverRecord;
 import reactor.util.retry.Retry;
+
+import static com.crusader.bt.message.MessageProducer.EVENT_TYPE_HEADER;
 
 @Slf4j(topic = "Consumer-MQ")
 @Component
@@ -19,6 +25,7 @@ import reactor.util.retry.Retry;
 public class MessageConsumer {
 
     private final KafkaReceiver<String, MessageDto> constructorMessageReceiver;
+    private final BotsService botsService;
 
     @SneakyThrows
     @PostConstruct
@@ -30,8 +37,9 @@ public class MessageConsumer {
                     log.info("Received message: " + r);
                     return r;
                 })
-                .doOnNext(recordsMap ->
-                        recordsMap.receiverOffset().acknowledge()
+                .flatMap(this::processMessage)
+                .doOnNext(receiverRecord ->
+                        receiverRecord.receiverOffset().acknowledge()
                 )
                 .onErrorContinue(
                         exc -> !(exc instanceof NoTransactionException),
@@ -48,4 +56,23 @@ public class MessageConsumer {
                 )
                 .subscribe();
     }
+
+    private Mono<ReceiverRecord<String, MessageDto>> processMessage(ReceiverRecord<String, MessageDto> receiverRecord) {
+
+        String eventType = new String(receiverRecord.headers().lastHeader(EVENT_TYPE_HEADER).value());
+
+        if (MessageEventType.CREATE_BOT_EVENT.getName().equals(eventType)) {
+            return botsService.createBot(receiverRecord.value())
+                    .thenReturn(receiverRecord);
+        } else if (MessageEventType.EDIT_BOT_EVENT.getName().equals(eventType)) {
+            return botsService.updateBotInfo(receiverRecord.value())
+                    .thenReturn(receiverRecord);
+        } else if (MessageEventType.DELETE_BOT_EVENT.getName().equals(eventType)) {
+            return botsService.deleteBot(receiverRecord.value())
+                    .thenReturn(receiverRecord);
+        } else {
+            return Mono.just(receiverRecord);
+        }
+    }
+
 }
