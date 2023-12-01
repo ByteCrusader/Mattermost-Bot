@@ -2,6 +2,7 @@ package com.crusader.bt.controller;
 
 import com.crusader.bt.constant.RouteConstants;
 import com.crusader.bt.dto.BotDto;
+import com.crusader.bt.dto.StatusDto;
 import com.crusader.bt.service.BotsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -41,11 +42,11 @@ public class BotsController {
             tags = {"bots"},
             responses = {
                     @ApiResponse(responseCode = "200", description = "Created bot information if successful", content = {
-                            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = BotDto.class)))
+                            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = StatusDto.class)))
                     })
             }
     )
-    public Mono<ResponseEntity<BotDto>> createBot(
+    public Mono<ResponseEntity<StatusDto>> createBot(
             @Parameter(name = "createBotBody", description = "Object with the bot info") @RequestBody BotDto createDto,
             ServerWebExchange exchange
     ) {
@@ -67,11 +68,11 @@ public class BotsController {
             tags = {"bots"},
             responses = {
                     @ApiResponse(responseCode = "200", description = "Update bot information if successful", content = {
-                            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = BotDto.class)))
+                            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = StatusDto.class)))
                     })
             }
     )
-    public Mono<ResponseEntity<BotDto>> updateBot(
+    public Mono<ResponseEntity<StatusDto>> updateBot(
             @Parameter(name = "updateBotBody", description = "Object with the bot info") @RequestBody BotDto updateDto,
             ServerWebExchange exchange
     ) {
@@ -93,11 +94,11 @@ public class BotsController {
             tags = {"bots"},
             responses = {
                     @ApiResponse(responseCode = "200", description = "Resulted bot info if successful", content = {
-                            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = BotDto.class)))
+                            @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = StatusDto.class)))
                     })
             }
     )
-    public Mono<ResponseEntity<BotDto>> deleteBot(
+    public Mono<ResponseEntity<StatusDto>> deleteBot(
             @Parameter(name = "username", description = "Name of bot", in = ParameterIn.QUERY) @PathVariable String username,
             ServerWebExchange exchange
     ) {

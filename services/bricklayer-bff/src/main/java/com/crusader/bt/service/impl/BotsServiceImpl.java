@@ -1,8 +1,11 @@
 package com.crusader.bt.service.impl;
 
 import com.crusader.bt.client.ConstructorClient;
+import com.crusader.bt.constant.StatusConstants;
 import com.crusader.bt.dto.BotDto;
 import com.crusader.bt.dto.MessageDto;
+import com.crusader.bt.dto.StatusDto;
+import com.crusader.bt.enums.MessageEventType;
 import com.crusader.bt.mapper.MessageDtoMapper;
 import com.crusader.bt.message.MessageProducer;
 import com.crusader.bt.service.BotsService;
@@ -23,34 +26,30 @@ public class BotsServiceImpl implements BotsService {
     private final MessageDtoMapper messageDtoMapper;
 
     @Override
-    public Mono<BotDto> createBot(Principal principal, BotDto createRequest) {
+    public Mono<StatusDto> createBot(Principal principal, BotDto createRequest) {
 
         return Mono.just(
                         enrichBotInfo(principal, createRequest)
                 )
-                .flatMap(constructorClient::createBot)
-                .map(bto -> {
-                    MessageDto messageDto = messageDtoMapper.mapToMessageDto(bto);
-                    messageProducer.sendConstructorMessage(messageDto, "create");
-                    return bto;
-                });
+                .map(botDto -> sendRequestMessage(botDto, MessageEventType.CREATE_BOT_EVENT));
     }
 
     @Override
-    public Mono<BotDto> updateBotInfo(Principal principal, BotDto updateDto) {
+    public Mono<StatusDto> updateBotInfo(Principal principal, BotDto updateDto) {
 
         return Mono.just(
                         enrichBotInfo(principal, updateDto)
                 )
-                .flatMap(constructorClient::updateBot);
+                .map(botDto -> sendRequestMessage(botDto, MessageEventType.EDIT_BOT_EVENT));
     }
 
     @Override
-    public Mono<BotDto> deleteBot(Principal principal, String username) {
+    public Mono<StatusDto> deleteBot(Principal principal, String username) {
 
-        return constructorClient.deleteBot(
-                principal.getName(), username
-        );
+        return Mono.just(
+                        createBotInfo(principal, username)
+                )
+                .map(botDto -> sendRequestMessage(botDto, MessageEventType.DELETE_BOT_EVENT));
     }
 
     @Override
@@ -68,4 +67,41 @@ public class BotsServiceImpl implements BotsService {
         return inboundRequest;
     }
 
+    private BotDto createBotInfo(Principal principal, String username) {
+
+        return BotDto.builder()
+                .ownerId(principal.getName())
+                .username(username)
+                .build();
+    }
+
+    private StatusDto sendRequestMessage(BotDto createRequest, MessageEventType eventType) {
+        MessageDto messageDto = messageDtoMapper.mapToMessageDto(createRequest);
+
+        try {
+            messageProducer.sendConstructorMessage(messageDto, eventType);
+        } catch (Exception ex) {
+            return createResponse(
+                    StatusConstants.FAIL_STATUS
+            );
+        }
+
+        return createResponse(
+                StatusConstants.OK_STATUS
+        );
+    }
+
+    /**
+     * Build service response dto
+     *
+     * @param status result status
+     * @return result dto
+     */
+    private StatusDto createResponse(String status) {
+
+        StatusDto response = new StatusDto();
+        response.setStatus(status);
+
+        return response;
+    }
 }

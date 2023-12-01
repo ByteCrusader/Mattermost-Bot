@@ -2,6 +2,7 @@ package com.crusader.bt.message;
 
 import com.crusader.bt.config.properties.KafkaProperties;
 import com.crusader.bt.dto.MessageDto;
+import com.crusader.bt.enums.MessageEventType;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import reactor.kafka.sender.KafkaSender;
 import reactor.kafka.sender.SenderRecord;
 
 import java.nio.charset.StandardCharsets;
+import java.time.OffsetDateTime;
 
 @Slf4j(topic = "Producer-MQ")
 @Component
@@ -20,17 +22,25 @@ import java.nio.charset.StandardCharsets;
 @ConditionalOnProperty(value = "kafka.enabled", havingValue = "true")
 public class MessageProducer {
 
+    public static final String EVENT_TIME_HEADER = "eventTime";
+    public static final String EVENT_TYPE_HEADER = "eventType";
+    public static final String SOURCE_HEADER = "source";
+    public static final String SOURCE_VALUE = "bff.application";
+
     private final KafkaSender<String, MessageDto> constructorMessageSender;
     private final KafkaProperties properties;
 
     @SneakyThrows
-    public void sendConstructorMessage(MessageDto message, String source) {
+    public void sendConstructorMessage(MessageDto message, MessageEventType eventType) {
         ProducerRecord<String, MessageDto> producerRecord = new ProducerRecord<>(
                 properties.getConstructorQueue().getTopic(),
+                message.getUsername(),
                 message
         );
 
-        addHeader(producerRecord, "BFF", source);
+        addHeader(producerRecord, EVENT_TIME_HEADER, OffsetDateTime.now().toString());
+        addHeader(producerRecord, EVENT_TYPE_HEADER, eventType.getName());
+        addHeader(producerRecord, SOURCE_HEADER, SOURCE_VALUE);
 
         Mono<SenderRecord<String, MessageDto, Object>> senderRecord = Mono
                 .just(SenderRecord.create(producerRecord, null))
@@ -40,7 +50,7 @@ public class MessageProducer {
                                 sendRecord.value(),
                                 sendRecord.topic(),
                                 sendRecord.key(),
-                                source
+                                eventType.getName()
                         )
                 );
 

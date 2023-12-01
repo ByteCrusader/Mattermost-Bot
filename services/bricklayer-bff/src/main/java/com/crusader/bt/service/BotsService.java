@@ -2,6 +2,7 @@ package com.crusader.bt.service;
 
 
 import com.crusader.bt.dto.BotDto;
+import com.crusader.bt.dto.StatusDto;
 import reactor.core.publisher.Mono;
 
 import java.security.Principal;
@@ -15,14 +16,14 @@ public interface BotsService {
      * @param createRequest
      * @return created bot
      */
-    Mono<BotDto> createBot(Principal principal, BotDto createRequest);
+    Mono<StatusDto> createBot(Principal principal, BotDto createRequest);
 
     /**
      * Update information about bot
      *
      * @param updateDto@return resulted bot
      */
-    Mono<BotDto> updateBotInfo(Principal principal, BotDto updateDto);
+    Mono<StatusDto> updateBotInfo(Principal principal, BotDto updateDto);
 
     /**
      * Delete bot from system
@@ -30,7 +31,7 @@ public interface BotsService {
      * @param username bot username
      * @return resulted bot
      */
-    Mono<BotDto> deleteBot(Principal principal, String username);
+    Mono<StatusDto> deleteBot(Principal principal, String username);
 
     /**
      * Get bot information by username
