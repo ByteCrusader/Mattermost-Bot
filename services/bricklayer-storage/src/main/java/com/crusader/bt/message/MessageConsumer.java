@@ -18,13 +18,13 @@ import reactor.util.retry.Retry;
 @ConditionalOnProperty(value = "kafka.enabled", havingValue = "true")
 public class MessageConsumer {
 
-    private final KafkaReceiver<String, MessageDto> messageReceiver;
+    private final KafkaReceiver<String, MessageDto> storageMessageReceiver;
 
     @SneakyThrows
     @PostConstruct
-    public void receivedSingleMessage() {
+    public void receivedStorageMessage() {
 
-        messageReceiver
+        storageMessageReceiver
                 .receive()
                 .map(r -> {
                     log.info("Received message: " + r);

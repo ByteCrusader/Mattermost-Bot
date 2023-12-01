@@ -20,17 +20,18 @@ import java.nio.charset.StandardCharsets;
 @ConditionalOnProperty(value = "kafka.enabled", havingValue = "true")
 public class MessageProducer {
 
-    private final KafkaSender<String, MessageDto> messageSender;
+    private final KafkaSender<String, MessageDto> storageMessageSender;
+    private final KafkaSender<String, MessageDto> engineMessageSender;
     private final KafkaProperties properties;
 
     @SneakyThrows
-    public void sendSingleMessage(MessageDto message, String source) {
+    public void sendStorageMessage(MessageDto message, String source) {
         ProducerRecord<String, MessageDto> producerRecord = new ProducerRecord<>(
-                properties.getTopic(),
+                properties.getConstructorQueue().getTopic(),
                 message
         );
 
-        addHeader(producerRecord, "BFF", source);
+        addHeader(producerRecord, "CONSTRUCTOR", source);
 
         Mono<SenderRecord<String, MessageDto, Object>> senderRecord = Mono
                 .just(SenderRecord.create(producerRecord, null))
@@ -44,14 +45,39 @@ public class MessageProducer {
                         )
                 );
 
-        sendSingleMessage(senderRecord);
+        sendSingleMessage(storageMessageSender, senderRecord);
+    }
+
+    @SneakyThrows
+    public void sendEngineMessage(MessageDto message, String source) {
+        ProducerRecord<String, MessageDto> producerRecord = new ProducerRecord<>(
+                properties.getEngineQueue().getTopic(),
+                message
+        );
+
+        addHeader(producerRecord, "CONSTRUCTOR", source);
+
+        Mono<SenderRecord<String, MessageDto, Object>> senderRecord = Mono
+                .just(SenderRecord.create(producerRecord, null))
+                .doOnNext(sendRecord ->
+                        log.info(
+                                "Send message: {} \n into topic {}, with key {} and source {}",
+                                sendRecord.value(),
+                                sendRecord.topic(),
+                                sendRecord.key(),
+                                source
+                        )
+                );
+
+        sendSingleMessage(engineMessageSender, senderRecord);
     }
 
     private void addHeader(ProducerRecord<String, MessageDto> producerRecord, String key, String value) {
         producerRecord.headers().add(key, value.getBytes(StandardCharsets.UTF_8));
     }
 
-    private void sendSingleMessage(Mono<SenderRecord<String, MessageDto, Object>> senderRecord) {
+    private void sendSingleMessage(KafkaSender<String, MessageDto> messageSender,
+                                   Mono<SenderRecord<String, MessageDto, Object>> senderRecord) {
 
         messageSender.send(senderRecord)
                 .single()

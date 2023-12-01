@@ -14,7 +14,6 @@ public class KafkaProperties {
     private Boolean enabled;
     private boolean autoCommit = false;
     private String bootstrap;
-    private String topic;
     private String securityProtocol;
     private String saslMechanism;
     private String saslJaasUsername;
@@ -24,5 +23,15 @@ public class KafkaProperties {
     private String maxPollRecords;
     private String maxPollIntervalMs;
     private String offsetReset;
+
+    private TopicDetails constructorQueue;
+    private TopicDetails storageQueue;
+
+    @Getter
+    @Setter
+    public static class TopicDetails {
+        private String topic;
+        private String clientNGroupId;
+    }
 
 }

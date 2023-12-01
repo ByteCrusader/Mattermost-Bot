@@ -20,13 +20,13 @@ import java.nio.charset.StandardCharsets;
 @ConditionalOnProperty(value = "kafka.enabled", havingValue = "true")
 public class MessageProducer {
 
-    private final KafkaSender<String, MessageDto> messageSender;
+    private final KafkaSender<String, MessageDto> constructorMessageSender;
     private final KafkaProperties properties;
 
     @SneakyThrows
-    public void sendSingleMessage(MessageDto message, String source) {
+    public void sendConstructorMessage(MessageDto message, String source) {
         ProducerRecord<String, MessageDto> producerRecord = new ProducerRecord<>(
-                properties.getTopic(),
+                properties.getConstructorQueue().getTopic(),
                 message
         );
 
@@ -53,7 +53,7 @@ public class MessageProducer {
 
     private void sendSingleMessage(Mono<SenderRecord<String, MessageDto, Object>> senderRecord) {
 
-        messageSender.send(senderRecord)
+        constructorMessageSender.send(senderRecord)
                 .single()
                 .doOnSuccess(senderResult -> log.info(
                         "Message sent, offset : {}",

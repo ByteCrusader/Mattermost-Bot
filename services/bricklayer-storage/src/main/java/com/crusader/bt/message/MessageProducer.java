@@ -24,9 +24,9 @@ public class MessageProducer {
     private final KafkaProperties properties;
 
     @SneakyThrows
-    public void sendSingleMessage(MessageDto message, String source) {
+    public void sendConstructorMessage(MessageDto message, String source) {
         ProducerRecord<String, MessageDto> producerRecord = new ProducerRecord<>(
-                properties.getTopic(),
+                properties.getConstructorQueue().getTopic(),
                 message
         );
 

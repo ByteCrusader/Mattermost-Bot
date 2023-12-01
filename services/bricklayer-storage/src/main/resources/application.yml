@@ -65,7 +65,6 @@ management:
 kafka:
   enabled: true
   bootstrap: "bricklayer-kafka:9092"
-  topic: "bot-queue"
   saslMechanism: "PLAIN"
   securityProtocol: "SASL_PLAINTEXT"
   saslJaasUsername: ${KAFKA_USER}
@@ -75,3 +74,9 @@ kafka:
   maxPollRecords: 5
   maxPollIntervalMs: 500000
   offsetReset: latest
+  constructorQueue:
+    topic: "constructor-queue"
+    clientNGroupId: "storage.integrity.application"
+  storageQueue:
+    topic: "storage-queue"
+    clientNGroupId: "storage.integrity.application"

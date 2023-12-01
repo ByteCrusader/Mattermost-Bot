@@ -31,7 +31,7 @@ public class BotsServiceImpl implements BotsService {
                 .flatMap(constructorClient::createBot)
                 .map(bto -> {
                     MessageDto messageDto = messageDtoMapper.mapToMessageDto(bto);
-                    messageProducer.sendSingleMessage(messageDto, "create");
+                    messageProducer.sendConstructorMessage(messageDto, "create");
                     return bto;
                 });
     }

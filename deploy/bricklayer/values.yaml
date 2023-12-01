@@ -18,7 +18,14 @@ global:
   mq:
     user: "bricklayer"
     password: "password"
-
+kafka:
+  enabled: true
+  sasl:
+    client:
+      users:
+        - bricklayer
+      passwords:
+        - password
 bff:
   enabled: true
 constructor:
@@ -29,11 +36,3 @@ storage:
   enabled: true
 user:
   enabled: true
-kafka:
-  enabled: true
-  sasl:
-    client:
-      users:
-        - bricklayer
-      passwords:
-        - password
