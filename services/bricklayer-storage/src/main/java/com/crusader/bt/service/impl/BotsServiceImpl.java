@@ -2,7 +2,9 @@ package com.crusader.bt.service.impl;
 
 import com.crusader.bt.converter.BotEntityToDtoConverter;
 import com.crusader.bt.dto.BotDto;
+import com.crusader.bt.dto.MessageDto;
 import com.crusader.bt.entity.BotEntity;
+import com.crusader.bt.mapper.MessageDtoMapper;
 import com.crusader.bt.repos.BotRepository;
 import com.crusader.bt.service.BotsService;
 import lombok.RequiredArgsConstructor;
@@ -23,42 +25,43 @@ public class BotsServiceImpl implements BotsService {
 
     private final BotRepository botRepository;
     private final BotEntityToDtoConverter botConverter;
+    private final MessageDtoMapper messageDtoMapper;
 
     @Override
-    public Mono<BotDto> createBot(String ownerId, String username, String displayName, String description) {
+    public Mono<Void> createBot(MessageDto createDto) {
 
-        return botRepository.save(
-                        createNewBotEntity(
-                                username, displayName, description, ownerId
-                        )
+        return Mono.just(
+                        messageDtoMapper.mapToBotEntity(createDto)
                 )
-                .map(botConverter::convert);
-    }
-
-    @Override
-    public Mono<BotDto> updateBotInfo(String ownerId,
-                                      String username,
-                                      String displayName,
-                                      String description,
-                                      BigInteger updateAt) {
-
-        return botRepository.findByUsername(username)
-                .filter(entity -> checkUser(ownerId, entity.getOwnerId()))
-                .filter(botEntity -> checkBotVersion(botEntity, updateAt))
-                .map(botEntity -> updateBotInfo(botEntity, displayName, description))
+                .map(this::createNewBotEntity)
                 .flatMap(botRepository::save)
-                .map(botConverter::convert);
+                .then();
     }
 
     @Override
-    public Mono<BotDto> deleteBot(String ownerId, String username) {
+    public Mono<Void> updateBotInfo(MessageDto updateDto) {
 
-        return botRepository.findByUsername(username)
-                .filter(entity -> checkUser(ownerId, entity.getOwnerId()))
+        return botRepository.findByUsername(updateDto.getUsername())
+                .filter(entity -> checkUser(updateDto.getOwnerId(), entity.getOwnerId()))
+                .filter(botEntity -> checkBotVersion(botEntity, updateDto.getUpdateAt()))
+                .map(botEntity -> updateBotInfo(
+                        botEntity,
+                        updateDto.getDisplayName(),
+                        updateDto.getDescription()
+                ))
+                .flatMap(botRepository::save)
+                .then();
+    }
+
+    @Override
+    public Mono<Void> deleteBot(MessageDto deleteDto) {
+
+        return botRepository.findByUsername(deleteDto.getUsername())
+                .filter(entity -> checkUser(deleteDto.getOwnerId(), entity.getOwnerId()))
                 .filter(this::checkBotAvailability)
                 .map(this::deleteBot)
                 .flatMap(botRepository::save)
-                .map(botConverter::convert);
+                .then();
     }
 
     @Override
@@ -77,17 +80,11 @@ public class BotsServiceImpl implements BotsService {
                 .map(botConverter::convert);
     }
 
-    private BotEntity createNewBotEntity(String username, String displayName, String description, String ownerId) {
-        return new BotEntity(
-                UUID.randomUUID().toString(),
-                BigInteger.valueOf(System.currentTimeMillis()),
-                null,
-                null,
-                username,
-                displayName,
-                description,
-                ownerId
-        );
+    private BotEntity createNewBotEntity(BotEntity entity) {
+        entity.setUserId(UUID.randomUUID().toString());
+        entity.setCreateAt(BigInteger.valueOf(System.currentTimeMillis()));
+
+        return entity;
     }
 
     private BotEntity updateBotInfo(BotEntity entity, String displayName, String description) {

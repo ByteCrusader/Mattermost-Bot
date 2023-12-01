@@ -2,10 +2,9 @@ package com.crusader.bt.service;
 
 
 import com.crusader.bt.dto.BotDto;
+import com.crusader.bt.dto.MessageDto;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.math.BigInteger;
 
 public interface BotsService {
 
@@ -18,7 +17,7 @@ public interface BotsService {
      * @param description bot description
      * @return created bot
      */
-    Mono<BotDto> createBot(String ownerId, String username, String displayName, String description);
+    Mono<Void> createBot(MessageDto createDto);
 
     /**
      * Update information about bot
@@ -30,11 +29,7 @@ public interface BotsService {
      * @param updateAt    bot last update time
      * @return resulted bot
      */
-    Mono<BotDto> updateBotInfo(String ownerId,
-                               String username,
-                               String displayName,
-                               String description,
-                               BigInteger updateAt);
+    Mono<Void> updateBotInfo(MessageDto updateDto);
 
     /**
      * Delete bot from system
@@ -43,7 +38,7 @@ public interface BotsService {
      * @param username bot username
      * @return resulted bot
      */
-    Mono<BotDto> deleteBot(String ownerId, String username);
+    Mono<Void> deleteBot(MessageDto updateDto);
 
     /**
      * Get bot information by username
