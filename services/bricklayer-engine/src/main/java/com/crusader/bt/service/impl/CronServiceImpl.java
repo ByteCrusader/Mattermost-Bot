@@ -1,7 +1,7 @@
 package com.crusader.bt.service.impl;
 
 import com.crusader.bt.constant.StatusConstants;
-import com.crusader.bt.dto.CronDto;
+import com.crusader.bt.dto.MessageDto;
 import com.crusader.bt.dto.StatusDto;
 import com.crusader.bt.service.CronService;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +15,12 @@ import reactor.core.publisher.Mono;
 public class CronServiceImpl implements CronService {
 
     @Override
-    public Mono<StatusDto> checkStatus(CronDto createDto) {
+    public Mono<Void> createCronJob(MessageDto createDto) {
         return Mono.just(
                 createResponse(
                         StatusConstants.OK_STATUS
                 )
-        );
+        ).then();
     }
 
     /**

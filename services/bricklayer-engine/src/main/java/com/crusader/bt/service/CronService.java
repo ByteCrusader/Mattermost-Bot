@@ -1,7 +1,6 @@
 package com.crusader.bt.service;
 
-import com.crusader.bt.dto.CronDto;
-import com.crusader.bt.dto.StatusDto;
+import com.crusader.bt.dto.MessageDto;
 import reactor.core.publisher.Mono;
 
 /**
@@ -14,6 +13,6 @@ public interface CronService {
      *
      * @return status dto
      */
-    Mono<StatusDto> checkStatus(CronDto createDto);
+    Mono<Void> createCronJob(MessageDto createDto);
 
 }
