@@ -50,7 +50,7 @@ public class MessageProducer {
                                 sendRecord.value(),
                                 sendRecord.topic(),
                                 sendRecord.key(),
-                                eventType.getName()
+                                eventType
                         )
                 );
 
