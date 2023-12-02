@@ -7,7 +7,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum MessageEventType {
 
-    CREATE_JOB_EVENT("job_create_launch");
+    CREATE_JOB_EVENT("job_create_launch"),
+    COMPLETE_JOB_EVENT("job_create_success"),
+    FAIL_JOB_EVENT("job_create_failed"),
+    ;
 
     private final String name;
 }

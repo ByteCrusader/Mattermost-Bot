@@ -3,6 +3,7 @@ package com.crusader.bt.message;
 import com.crusader.bt.dto.MessageDto;
 import com.crusader.bt.enums.MessageEventType;
 import com.crusader.bt.service.CronService;
+import com.crusader.bt.utils.MqUtil;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -42,7 +43,7 @@ public class MessageConsumer {
                         recordsMap.receiverOffset().acknowledge()
                 )
                 .onErrorContinue(
-                        exc -> !(exc instanceof NoTransactionException),
+                        MqUtil::errorPredicate,
                         (exc, val) -> log.info(
                                 "Event dropped. Application exception into customer queue consumer : {} - {} ",
                                 exc.toString(),
