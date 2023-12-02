@@ -33,10 +33,6 @@ public class MessageConsumer {
 
         storageMessageReceiver
                 .receive()
-                .map(r -> {
-                    log.info("Received message: " + r);
-                    return r;
-                })
                 .flatMap(this::processMessage)
                 .doOnNext(recordsMap ->
                         recordsMap.receiverOffset().acknowledge()

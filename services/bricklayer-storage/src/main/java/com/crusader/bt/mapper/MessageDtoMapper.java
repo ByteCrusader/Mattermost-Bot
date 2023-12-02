@@ -1,6 +1,5 @@
 package com.crusader.bt.mapper;
 
-import com.crusader.bt.dto.BotDto;
 import com.crusader.bt.dto.MessageDto;
 import com.crusader.bt.entity.BotEntity;
 import org.mapstruct.Mapper;

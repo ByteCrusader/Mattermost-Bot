@@ -27,7 +27,7 @@ public class BotsServiceImpl implements BotsService {
 
     @Override
     public Mono<StatusDto> createBot(Principal principal, BotDto createRequest) {
-
+        log.info("Bot service start processing create bot request: {}", createRequest);
         return Mono.just(
                         enrichBotInfo(principal, createRequest)
                 )
@@ -36,7 +36,7 @@ public class BotsServiceImpl implements BotsService {
 
     @Override
     public Mono<StatusDto> updateBotInfo(Principal principal, BotDto updateDto) {
-
+        log.info("Bot service start processing update bot request: {}", updateDto);
         return Mono.just(
                         enrichBotInfo(principal, updateDto)
                 )
@@ -45,7 +45,7 @@ public class BotsServiceImpl implements BotsService {
 
     @Override
     public Mono<StatusDto> deleteBot(Principal principal, String username) {
-
+        log.info("Bot service start processing delete bot with username: {}", username);
         return Mono.just(
                         createBotInfo(principal, username)
                 )
@@ -54,7 +54,7 @@ public class BotsServiceImpl implements BotsService {
 
     @Override
     public Mono<BotDto> getBotInfo(Principal principal, String username) {
-
+        log.info("Bot service start processing get bot info for bot with username: {}", username);
         return constructorClient.getBot(
                 principal.getName(), username
         );

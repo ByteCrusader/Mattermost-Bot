@@ -22,18 +22,8 @@ public class SageServiceImpl implements SageService {
     }
 
     @Override
-    public Mono<Void> failedCreateBot(MessageDto createRequest) {
-        return null;
-    }
-
-    @Override
     public Mono<Void> successUpdateBot(MessageDto updateRequest) {
         return messageProducer.sendGenericMessage(updateRequest, MessageEventType.COMPLETE_EDIT_BOT_EVENT);
-    }
-
-    @Override
-    public Mono<Void> failedUpdateBot(MessageDto updateRequest) {
-        return null;
     }
 
     @Override
@@ -42,7 +32,8 @@ public class SageServiceImpl implements SageService {
     }
 
     @Override
-    public Mono<Void> failedDeleteBot(MessageDto deleteRequest) {
-        return null;
+    public Mono<Void> successCreateJob(MessageDto createRequest) {
+        return messageProducer.sendGenericMessage(createRequest, MessageEventType.COMPLETE_CREATE_JOB_EVENT);
     }
+
 }

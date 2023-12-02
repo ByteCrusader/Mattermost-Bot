@@ -25,7 +25,7 @@ public class BotsServiceImpl implements BotsService {
 
     @Override
     public Mono<Void> createBot(MessageDto createRequest) {
-
+        log.info("Bot service start processing create bot from message: {}", createRequest);
         return Mono.just(messageDtoMapper.mapToBotDto(createRequest))
                 .flatMap(mattermostClient::createBot)
                 .flatMap(botDto -> sendQueueMessage(botDto, MessageEventType.PROCESSING_CREATE_BOT_EVENT))
@@ -34,20 +34,20 @@ public class BotsServiceImpl implements BotsService {
 
     @Override
     public Mono<Void> updateBotInfo(MessageDto updateRequest) {
-
+        log.info("Bot service start processing update bot from message: {}", updateRequest);
         return Mono.just(messageDtoMapper.mapToBotDto(updateRequest))
                 .flatMap(botDto -> sendQueueMessage(botDto, MessageEventType.PROCESSING_EDIT_BOT_EVENT));
     }
 
     @Override
     public Mono<Void> deleteBot(MessageDto deleteRequest) {
-
+        log.info("Bot service start processing delete bot from message: {}", deleteRequest);
         return messageProducer.sendGenericMessage(deleteRequest, MessageEventType.PROCESSING_DELETE_BOT_EVENT);
     }
 
     @Override
     public Mono<BotDto> getBotInfo(String ownerId, String username) {
-
+        log.info("Bot service start processing get bot info with bot username: {}", username);
         return storageClient.getBot(ownerId, username);
     }
 

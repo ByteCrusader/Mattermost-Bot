@@ -33,10 +33,6 @@ public class MessageConsumer {
 
         bffMessageReceiver
                 .receive()
-                .map(r -> {
-                    log.info("Received message: " + r);
-                    return r;
-                })
                 .flatMap(this::processMessage)
                 .doOnNext(recordsMap ->
                         recordsMap.receiverOffset().acknowledge()
@@ -78,6 +74,12 @@ public class MessageConsumer {
                     .thenReturn(receiverRecord);
         } else if (MessageEventType.FAIL_DELETE_BOT_EVENT.getName().equals(eventType)) {
             return clientService.failedDeleteBot(receiverRecord.value())
+                    .thenReturn(receiverRecord);
+        } else if (MessageEventType.COMPLETE_CREATE_JOB_EVENT.getName().equals(eventType)) {
+            return clientService.successCreateJob(receiverRecord.value())
+                    .thenReturn(receiverRecord);
+        } else if (MessageEventType.FAIL_CREATE_JOB_EVENT.getName().equals(eventType)) {
+            return clientService.failedCreateJob(receiverRecord.value())
                     .thenReturn(receiverRecord);
         } else {
             return Mono.just(receiverRecord);

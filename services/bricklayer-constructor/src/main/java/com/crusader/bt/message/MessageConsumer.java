@@ -35,10 +35,6 @@ public class MessageConsumer {
 
         constructorMessageReceiver
                 .receive()
-                .map(r -> {
-                    log.info("Received message: " + r);
-                    return r;
-                })
                 .flatMap(this::processMessage)
                 .doOnNext(receiverRecord ->
                         receiverRecord.receiverOffset().acknowledge()
@@ -80,6 +76,9 @@ public class MessageConsumer {
                     .thenReturn(receiverRecord);
         } else if (MessageEventType.PROCESSED_DELETE_BOT_EVENT.getName().equals(eventType)) {
             return sageService.successDeleteBot(receiverRecord.value())
+                    .thenReturn(receiverRecord);
+        } else if (MessageEventType.PROCESSED_CREATE_JOB_EVENT.getName().equals(eventType)) {
+            return sageService.successCreateJob(receiverRecord.value())
                     .thenReturn(receiverRecord);
         } else {
             return Mono.just(receiverRecord);

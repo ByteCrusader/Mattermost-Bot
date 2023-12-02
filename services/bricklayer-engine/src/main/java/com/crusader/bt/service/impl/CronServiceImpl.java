@@ -21,6 +21,7 @@ public class CronServiceImpl implements CronService {
 
     @Override
     public Mono<Void> createCronJob(MessageDto createDto) {
+        log.info("Cron job service start processing create job from message: {}", createDto);
         return Mono.just(
                         createResponse(
                                 StatusConstants.OK_STATUS

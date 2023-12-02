@@ -71,4 +71,24 @@ public class ClientServiceImpl implements ClientService {
                 ))
                 .then();
     }
+
+    @Override
+    public Mono<Void> successCreateJob(MessageDto deleteRequest) {
+        return Mono.just(deleteRequest)
+                .doOnSuccess(result -> log.info(
+                        "Send to client UI message with successful case of cron job creating: {}",
+                        result
+                ))
+                .then();
+    }
+
+    @Override
+    public Mono<Void> failedCreateJob(MessageDto deleteRequest) {
+        return Mono.just(deleteRequest)
+                .doOnSuccess(result -> log.info(
+                        "Send to client UI message with unsuccessful case of cron job creating: {}",
+                        result
+                ))
+                .then();
+    }
 }

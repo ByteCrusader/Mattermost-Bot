@@ -33,7 +33,7 @@ public class BotsServiceImpl implements BotsService {
 
     @Override
     public Mono<Void> createBot(MessageDto createDto) {
-
+        log.info("Bot service start processing create bot from message: {}", createDto);
         return Mono.just(
                         messageDtoMapper.mapToBotEntity(createDto)
                 )
@@ -61,7 +61,7 @@ public class BotsServiceImpl implements BotsService {
 
     @Override
     public Mono<Void> updateBotInfo(MessageDto updateDto) {
-
+        log.info("Bot service start processing update bot from message: {}", updateDto);
         return botRepository.findByUsername(updateDto.getUsername())
                 .filter(entity -> checkUser(updateDto.getOwnerId(), entity.getOwnerId()))
                 .filter(botEntity -> checkBotVersion(botEntity, updateDto.getUpdateAt()))
@@ -93,7 +93,7 @@ public class BotsServiceImpl implements BotsService {
 
     @Override
     public Mono<Void> deleteBot(MessageDto deleteDto) {
-
+        log.info("Bot service start processing delete bot from message: {}", deleteDto);
         return botRepository.findByUsername(deleteDto.getUsername())
                 .filter(entity -> checkUser(deleteDto.getOwnerId(), entity.getOwnerId()))
                 .filter(this::checkBotAvailability)
@@ -121,7 +121,7 @@ public class BotsServiceImpl implements BotsService {
 
     @Override
     public Mono<BotDto> getBotInfo(String ownerId, String username) {
-
+        log.info("Bot service start processing get bot info with bot username: {}", username);
         return botRepository.findByUsername(username)
                 .filter(entity -> checkUser(ownerId, entity.getOwnerId()))
                 .filter(entity -> Objects.isNull(entity.getDeleteAt()))

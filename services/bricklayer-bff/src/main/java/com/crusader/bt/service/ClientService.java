@@ -21,7 +21,6 @@ public interface ClientService {
      */
     Mono<Void> failedCreateBot(MessageDto createRequest);
 
-
     /**
      * Successful update information about bot
      *
@@ -51,5 +50,19 @@ public interface ClientService {
      * @return resulted bot
      */
     Mono<Void> failedDeleteBot(MessageDto deleteRequest);
+
+    /**
+     * Successful create cron job into system
+     *
+     * @return resulted bot
+     */
+    Mono<Void> successCreateJob(MessageDto deleteRequest);
+
+    /**
+     * Create cron job into system has failed
+     *
+     * @return resulted bot
+     */
+    Mono<Void> failedCreateJob(MessageDto deleteRequest);
 
 }

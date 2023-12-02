@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.KafkaException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.NoTransactionException;
 import reactor.core.publisher.Mono;
 import reactor.kafka.receiver.KafkaReceiver;
 import reactor.kafka.receiver.ReceiverRecord;
@@ -34,10 +33,6 @@ public class MessageConsumer {
 
         engineMessageReceiver
                 .receive()
-                .map(r -> {
-                    log.info("Received message: " + r);
-                    return r;
-                })
                 .flatMap(this::processMessage)
                 .doOnNext(recordsMap ->
                         recordsMap.receiverOffset().acknowledge()
