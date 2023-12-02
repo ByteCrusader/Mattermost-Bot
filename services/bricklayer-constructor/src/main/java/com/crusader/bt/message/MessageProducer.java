@@ -36,7 +36,7 @@ public class MessageProducer {
         return sendRequestMessage(
                 storageMessageSender,
                 message,
-                properties.getConstructorQueue().getTopic(),
+                properties.getStorageQueue().getTopic(),
                 eventType
         );
     }
