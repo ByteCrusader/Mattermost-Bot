@@ -4,9 +4,12 @@ import com.crusader.bt.converter.BotEntityToDtoConverter;
 import com.crusader.bt.dto.BotDto;
 import com.crusader.bt.dto.MessageDto;
 import com.crusader.bt.entity.BotEntity;
+import com.crusader.bt.enums.MessageEventType;
 import com.crusader.bt.mapper.MessageDtoMapper;
+import com.crusader.bt.message.MessageProducer;
 import com.crusader.bt.repos.BotRepository;
 import com.crusader.bt.service.BotsService;
+import com.crusader.bt.utils.MqUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +29,7 @@ public class BotsServiceImpl implements BotsService {
     private final BotRepository botRepository;
     private final BotEntityToDtoConverter botConverter;
     private final MessageDtoMapper messageDtoMapper;
+    private final MessageProducer messageProducer;
 
     @Override
     public Mono<Void> createBot(MessageDto createDto) {
@@ -35,6 +39,23 @@ public class BotsServiceImpl implements BotsService {
                 )
                 .map(this::createNewBotEntity)
                 .flatMap(botRepository::save)
+                .map(messageDtoMapper::mapToMessageDto)
+                .doOnSuccess(result -> messageProducer.sendConstructorMessage(
+                        result,
+                        MessageEventType.COMPLETE_CREATE_BOT_EVENT
+                ))
+                .doOnError(
+                        MqUtil::errorPredicate,
+                        exc -> messageProducer.sendConstructorMessage(createDto, MessageEventType.FAIL_CREATE_BOT_EVENT)
+                )
+                .onErrorContinue(
+                        MqUtil::errorPredicate,
+                        (exc, val) -> log.info(
+                                "Event dropped. Application exception into create bot processing: {} - {} ",
+                                exc.toString(),
+                                exc.getLocalizedMessage()
+                        )
+                )
                 .then();
     }
 
@@ -50,6 +71,23 @@ public class BotsServiceImpl implements BotsService {
                         updateDto.getDescription()
                 ))
                 .flatMap(botRepository::save)
+                .map(messageDtoMapper::mapToMessageDto)
+                .doOnSuccess(result -> messageProducer.sendConstructorMessage(
+                        result,
+                        MessageEventType.COMPLETE_EDIT_BOT_EVENT
+                ))
+                .doOnError(
+                        MqUtil::errorPredicate,
+                        exc -> messageProducer.sendConstructorMessage(updateDto, MessageEventType.FAIL_EDIT_BOT_EVENT)
+                )
+                .onErrorContinue(
+                        MqUtil::errorPredicate,
+                        (exc, val) -> log.info(
+                                "Event dropped. Application exception into edit bot processing: {} - {} ",
+                                exc.toString(),
+                                exc.getLocalizedMessage()
+                        )
+                )
                 .then();
     }
 
@@ -61,6 +99,23 @@ public class BotsServiceImpl implements BotsService {
                 .filter(this::checkBotAvailability)
                 .map(this::deleteBot)
                 .flatMap(botRepository::save)
+                .map(messageDtoMapper::mapToMessageDto)
+                .doOnSuccess(result -> messageProducer.sendConstructorMessage(
+                        result,
+                        MessageEventType.COMPLETE_DELETE_BOT_EVENT
+                ))
+                .doOnError(
+                        MqUtil::errorPredicate,
+                        exc -> messageProducer.sendConstructorMessage(deleteDto, MessageEventType.FAIL_DELETE_BOT_EVENT)
+                )
+                .onErrorContinue(
+                        MqUtil::errorPredicate,
+                        (exc, val) -> log.info(
+                                "Event dropped. Application exception into delete bot processing: {} - {} ",
+                                exc.toString(),
+                                exc.getLocalizedMessage()
+                        )
+                )
                 .then();
     }
 

@@ -14,7 +14,7 @@ public interface MessageDtoMapper {
     /**
      * Map Bot dto object into message dto
      */
-    MessageDto mapToMessageDto(BotDto botDto);
+    MessageDto mapToMessageDto(BotEntity botEntity);
 
     /**
      * Map message dto object into bot entity

@@ -37,7 +37,7 @@ public class CronServiceImpl implements CronService {
                 .onErrorContinue(
                         MqUtil::errorPredicate,
                         (exc, val) -> log.info(
-                                "Event dropped. Application exception into customer queue consumer : {} - {} ",
+                                "Event dropped. Application exception into create cron job processing: {} - {} ",
                                 exc.toString(),
                                 exc.getLocalizedMessage()
                         )

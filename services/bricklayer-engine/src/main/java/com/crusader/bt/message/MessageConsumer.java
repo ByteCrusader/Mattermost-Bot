@@ -45,7 +45,7 @@ public class MessageConsumer {
                 .onErrorContinue(
                         MqUtil::errorPredicate,
                         (exc, val) -> log.info(
-                                "Event dropped. Application exception into customer queue consumer : {} - {} ",
+                                "Event dropped. Application exception into engine queue consumer : {} - {} ",
                                 exc.toString(),
                                 exc.getLocalizedMessage()
                         )
