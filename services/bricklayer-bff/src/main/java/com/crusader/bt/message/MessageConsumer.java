@@ -1,6 +1,8 @@
 package com.crusader.bt.message;
 
 import com.crusader.bt.dto.MessageDto;
+import com.crusader.bt.enums.MessageEventType;
+import com.crusader.bt.service.ClientService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -9,8 +11,12 @@ import org.apache.kafka.common.KafkaException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.NoTransactionException;
+import reactor.core.publisher.Mono;
 import reactor.kafka.receiver.KafkaReceiver;
+import reactor.kafka.receiver.ReceiverRecord;
 import reactor.util.retry.Retry;
+
+import static com.crusader.bt.message.MessageProducer.EVENT_TYPE_HEADER;
 
 @Slf4j(topic = "Consumer-MQ")
 @Component
@@ -19,6 +25,7 @@ import reactor.util.retry.Retry;
 public class MessageConsumer {
 
     private final KafkaReceiver<String, MessageDto> bffMessageReceiver;
+    private final ClientService clientService;
 
     @SneakyThrows
     @PostConstruct
@@ -30,6 +37,7 @@ public class MessageConsumer {
                     log.info("Received message: " + r);
                     return r;
                 })
+                .flatMap(this::processMessage)
                 .doOnNext(recordsMap ->
                         recordsMap.receiverOffset().acknowledge()
                 )
@@ -48,4 +56,32 @@ public class MessageConsumer {
                 )
                 .subscribe();
     }
+
+    private Mono<ReceiverRecord<String, MessageDto>> processMessage(ReceiverRecord<String, MessageDto> receiverRecord) {
+
+        String eventType = new String(receiverRecord.headers().lastHeader(EVENT_TYPE_HEADER).value());
+
+        if (MessageEventType.COMPLETE_CREATE_BOT_EVENT.getName().equals(eventType)) {
+            return clientService.successCreateBot(receiverRecord.value())
+                    .thenReturn(receiverRecord);
+        } else if (MessageEventType.FAIL_CREATE_BOT_EVENT.getName().equals(eventType)) {
+            return clientService.failedCreateBot(receiverRecord.value())
+                    .thenReturn(receiverRecord);
+        } else if (MessageEventType.COMPLETE_EDIT_BOT_EVENT.getName().equals(eventType)) {
+            return clientService.successUpdateBot(receiverRecord.value())
+                    .thenReturn(receiverRecord);
+        } else if (MessageEventType.FAIL_EDIT_BOT_EVENT.getName().equals(eventType)) {
+            return clientService.failedUpdateBot(receiverRecord.value())
+                    .thenReturn(receiverRecord);
+        } else if (MessageEventType.COMPLETE_DELETE_BOT_EVENT.getName().equals(eventType)) {
+            return clientService.successDeleteBot(receiverRecord.value())
+                    .thenReturn(receiverRecord);
+        } else if (MessageEventType.FAIL_DELETE_BOT_EVENT.getName().equals(eventType)) {
+            return clientService.failedDeleteBot(receiverRecord.value())
+                    .thenReturn(receiverRecord);
+        } else {
+            return Mono.just(receiverRecord);
+        }
+    }
+
 }
