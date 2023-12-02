@@ -61,13 +61,13 @@ public class MessageConsumer {
 
         String eventType = new String(receiverRecord.headers().lastHeader(EVENT_TYPE_HEADER).value());
 
-        if (MessageEventType.CREATE_BOT_EVENT.getName().equals(eventType)) {
+        if (MessageEventType.PROCESSING_CREATE_BOT_EVENT.getName().equals(eventType)) {
             return botsService.createBot(receiverRecord.value())
                     .thenReturn(receiverRecord);
-        } else if (MessageEventType.EDIT_BOT_EVENT.getName().equals(eventType)) {
+        } else if (MessageEventType.PROCESSING_EDIT_BOT_EVENT.getName().equals(eventType)) {
             return botsService.updateBotInfo(receiverRecord.value())
                     .thenReturn(receiverRecord);
-        } else if (MessageEventType.DELETE_BOT_EVENT.getName().equals(eventType)) {
+        } else if (MessageEventType.PROCESSING_DELETE_BOT_EVENT.getName().equals(eventType)) {
             return botsService.deleteBot(receiverRecord.value())
                     .thenReturn(receiverRecord);
         } else {

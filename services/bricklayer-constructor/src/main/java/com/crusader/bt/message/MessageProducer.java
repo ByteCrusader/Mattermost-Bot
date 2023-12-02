@@ -27,37 +27,15 @@ public class MessageProducer {
     public static final String SOURCE_HEADER = "source";
     public static final String SOURCE_VALUE = "constructor.application";
 
-    private final KafkaSender<String, MessageDto> storageMessageSender;
-    private final KafkaSender<String, MessageDto> engineMessageSender;
-    private final KafkaSender<String, MessageDto> bffMessageSender;
+    private final KafkaSender<String, MessageDto> genericMessageSender;
     private final KafkaProperties properties;
 
     @SneakyThrows
-    public Mono<Void> sendStorageMessage(MessageDto message, MessageEventType eventType) {
+    public Mono<Void> sendGenericMessage(MessageDto message, MessageEventType eventType) {
         return sendRequestMessage(
-                storageMessageSender,
+                genericMessageSender,
                 message,
-                properties.getStorageQueue().getTopic(),
-                eventType
-        );
-    }
-
-    @SneakyThrows
-    public Mono<Void> sendEngineMessage(MessageDto message, MessageEventType eventType) {
-        return sendRequestMessage(
-                engineMessageSender,
-                message,
-                properties.getEngineQueue().getTopic(),
-                eventType
-        );
-    }
-
-    @SneakyThrows
-    public Mono<Void> sendBffMessage(MessageDto message, MessageEventType eventType) {
-        return sendRequestMessage(
-                bffMessageSender,
-                message,
-                properties.getBffQueue().getTopic(),
+                properties.getBricksQueue().getTopic(),
                 eventType
         );
     }

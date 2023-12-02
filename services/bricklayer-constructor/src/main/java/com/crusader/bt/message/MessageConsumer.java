@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.KafkaException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.NoTransactionException;
 import reactor.core.publisher.Mono;
 import reactor.kafka.receiver.KafkaReceiver;
 import reactor.kafka.receiver.ReceiverRecord;
@@ -67,19 +66,19 @@ public class MessageConsumer {
         if (MessageEventType.CREATE_BOT_EVENT.getName().equals(eventType)) {
             return botsService.createBot(receiverRecord.value())
                     .thenReturn(receiverRecord);
-        } else if (MessageEventType.COMPLETE_CREATE_BOT_EVENT.getName().equals(eventType)) {
+        } else if (MessageEventType.PROCESSED_CREATE_BOT_EVENT.getName().equals(eventType)) {
             return sageService.successCreateBot(receiverRecord.value())
                     .thenReturn(receiverRecord);
         } else if (MessageEventType.EDIT_BOT_EVENT.getName().equals(eventType)) {
             return botsService.updateBotInfo(receiverRecord.value())
                     .thenReturn(receiverRecord);
-        } else if (MessageEventType.COMPLETE_EDIT_BOT_EVENT.getName().equals(eventType)) {
+        } else if (MessageEventType.PROCESSED_EDIT_BOT_EVENT.getName().equals(eventType)) {
             return sageService.successUpdateBot(receiverRecord.value())
                     .thenReturn(receiverRecord);
         } else if (MessageEventType.DELETE_BOT_EVENT.getName().equals(eventType)) {
             return botsService.deleteBot(receiverRecord.value())
                     .thenReturn(receiverRecord);
-        } else if (MessageEventType.COMPLETE_DELETE_BOT_EVENT.getName().equals(eventType)) {
+        } else if (MessageEventType.PROCESSED_DELETE_BOT_EVENT.getName().equals(eventType)) {
             return sageService.successDeleteBot(receiverRecord.value())
                     .thenReturn(receiverRecord);
         } else {

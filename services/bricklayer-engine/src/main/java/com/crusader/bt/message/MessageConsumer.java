@@ -62,7 +62,7 @@ public class MessageConsumer {
 
         String eventType = new String(receiverRecord.headers().lastHeader(EVENT_TYPE_HEADER).value());
 
-        if (MessageEventType.CREATE_JOB_EVENT.getName().equals(eventType)) {
+        if (MessageEventType.PROCESSING_CREATE_JOB_EVENT.getName().equals(eventType)) {
             return cronService.createCronJob(receiverRecord.value())
                     .thenReturn(receiverRecord);
         } else {

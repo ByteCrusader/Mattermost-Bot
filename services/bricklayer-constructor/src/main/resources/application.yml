@@ -75,15 +75,6 @@ kafka:
   maxPollRecords: 5
   maxPollIntervalMs: 500000
   offsetReset: latest
-  constructorQueue:
-    topic: "constructor-queue"
-    clientNGroupId: "constructor.integrity.application"
-  storageQueue:
-    topic: "storage-queue"
-    clientNGroupId: "constructor.integrity.application"
-  engineQueue:
-    topic: "engine-queue"
-    clientNGroupId: "constructor.integrity.application"
-  bffQueue:
-    topic: "bff-queue"
+  bricksQueue:
+    topic: "bricks-queue"
     clientNGroupId: "constructor.integrity.application"

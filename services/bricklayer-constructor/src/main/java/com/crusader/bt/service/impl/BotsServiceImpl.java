@@ -28,21 +28,21 @@ public class BotsServiceImpl implements BotsService {
 
         return Mono.just(messageDtoMapper.mapToBotDto(createRequest))
                 .flatMap(mattermostClient::createBot)
-                .flatMap(botDto -> sendStorageMessage(botDto, MessageEventType.CREATE_BOT_EVENT))
-                .then(sendEngineMessage(createRequest, MessageEventType.CREATE_JOB_EVENT));
+                .flatMap(botDto -> sendQueueMessage(botDto, MessageEventType.PROCESSING_CREATE_BOT_EVENT))
+                .then(messageProducer.sendGenericMessage(createRequest, MessageEventType.PROCESSING_CREATE_JOB_EVENT));
     }
 
     @Override
     public Mono<Void> updateBotInfo(MessageDto updateRequest) {
 
         return Mono.just(messageDtoMapper.mapToBotDto(updateRequest))
-                .flatMap(botDto -> sendStorageMessage(botDto, MessageEventType.EDIT_BOT_EVENT));
+                .flatMap(botDto -> sendQueueMessage(botDto, MessageEventType.PROCESSING_EDIT_BOT_EVENT));
     }
 
     @Override
     public Mono<Void> deleteBot(MessageDto deleteRequest) {
 
-        return sendStorageMessage(deleteRequest, MessageEventType.DELETE_BOT_EVENT);
+        return messageProducer.sendGenericMessage(deleteRequest, MessageEventType.PROCESSING_DELETE_BOT_EVENT);
     }
 
     @Override
@@ -51,33 +51,10 @@ public class BotsServiceImpl implements BotsService {
         return storageClient.getBot(ownerId, username);
     }
 
-    private Mono<Void> sendStorageMessage(BotDto createRequest, MessageEventType eventType) {
+    private Mono<Void> sendQueueMessage(BotDto createRequest, MessageEventType eventType) {
         MessageDto messageDto = messageDtoMapper.mapToMessageDto(createRequest);
 
-        return sendStorageMessage(messageDto, eventType);
-    }
-
-    private Mono<Void> sendStorageMessage(MessageDto messageDto, MessageEventType eventType) {
-
-        try {
-            return messageProducer.sendStorageMessage(messageDto, eventType);
-        } catch (Exception ex) {
-            //todo add sage exception flow
-        }
-
-        return Mono.empty();
-    }
-
-
-    private Mono<Void> sendEngineMessage(MessageDto createRequest, MessageEventType eventType) {
-
-        try {
-            return messageProducer.sendEngineMessage(createRequest, eventType);
-        } catch (Exception ex) {
-            //todo add sage exception flow
-        }
-
-        return Mono.empty();
+        return messageProducer.sendGenericMessage(messageDto, eventType);
     }
 
 }

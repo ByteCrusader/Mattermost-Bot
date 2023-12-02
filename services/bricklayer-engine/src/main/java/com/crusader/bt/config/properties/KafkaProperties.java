@@ -24,8 +24,7 @@ public class KafkaProperties {
     private String maxPollIntervalMs;
     private String offsetReset;
 
-    private TopicDetails constructorQueue;
-    private TopicDetails engineQueue;
+    private TopicDetails bricksQueue;
 
     @Getter
     @Setter

@@ -28,11 +28,11 @@ public class CronServiceImpl implements CronService {
                 )
                 .doOnSuccess(result -> messageProducer.sendConstructorMessage(
                         createDto,
-                        MessageEventType.COMPLETE_JOB_EVENT
+                        MessageEventType.PROCESSED_CREATE_JOB_EVENT
                 ))
                 .doOnError(
                         MqUtil::errorPredicate,
-                        exc -> messageProducer.sendConstructorMessage(createDto, MessageEventType.FAIL_JOB_EVENT)
+                        exc -> messageProducer.sendConstructorMessage(createDto, MessageEventType.FAIL_CREATE_JOB_EVENT)
                 )
                 .onErrorContinue(
                         MqUtil::errorPredicate,

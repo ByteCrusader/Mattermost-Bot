@@ -43,7 +43,7 @@ public class KafkaConfiguration {
                                 buildConsumerFactoryConfig(kafkaProperties)
                         )
                         .withValueDeserializer(new JsonDeserializer<>(MessageDto.class))
-                        .subscription(Collections.singleton(kafkaProperties.getStorageQueue().getTopic()))
+                        .subscription(Collections.singleton(kafkaProperties.getBricksQueue().getTopic()))
         );
     }
 
@@ -60,8 +60,8 @@ public class KafkaConfiguration {
     private Map<String, Object> buildConsumerFactoryConfig(KafkaProperties details) {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, details.getBootstrap());
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, details.getStorageQueue().getClientNGroupId());
-        props.put(ConsumerConfig.CLIENT_ID_CONFIG, details.getStorageQueue().getClientNGroupId());
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, details.getBricksQueue().getClientNGroupId());
+        props.put(ConsumerConfig.CLIENT_ID_CONFIG, details.getBricksQueue().getClientNGroupId());
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, Boolean.FALSE);
         props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, details.getSessionTimeoutMs());
         props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, details.getHeartbeatIntervalMs());
@@ -76,7 +76,7 @@ public class KafkaConfiguration {
     private Map<String, Object> buildProducerFactoryConfig(KafkaProperties details) {
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, details.getBootstrap());
-        props.put(ProducerConfig.CLIENT_ID_CONFIG, details.getConstructorQueue().getClientNGroupId());
+        props.put(ProducerConfig.CLIENT_ID_CONFIG, details.getBricksQueue().getClientNGroupId());
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         fillSecurity(details, props);

@@ -40,39 +40,19 @@ public class KafkaConfiguration {
         return KafkaReceiver.create(
                 ReceiverOptions
                         .<String, MessageDto>create(
-                                buildConsumerFactoryConfig(kafkaProperties, kafkaProperties.getConstructorQueue())
+                                buildConsumerFactoryConfig(kafkaProperties, kafkaProperties.getBricksQueue())
                         )
                         .withValueDeserializer(new JsonDeserializer<>(MessageDto.class))
-                        .subscription(Collections.singleton(kafkaProperties.getConstructorQueue().getTopic()))
+                        .subscription(Collections.singleton(kafkaProperties.getBricksQueue().getTopic()))
         );
     }
 
     @Bean
-    public KafkaSender<String, MessageDto> storageMessageSender() {
+    public KafkaSender<String, MessageDto> genericMessageSender() {
         return KafkaSender.create(
                 SenderOptions
                         .create(
-                                buildProducerFactoryConfig(kafkaProperties, kafkaProperties.getStorageQueue())
-                        )
-        );
-    }
-
-    @Bean
-    public KafkaSender<String, MessageDto> engineMessageSender() {
-        return KafkaSender.create(
-                SenderOptions
-                        .create(
-                                buildProducerFactoryConfig(kafkaProperties, kafkaProperties.getEngineQueue())
-                        )
-        );
-    }
-
-    @Bean
-    public KafkaSender<String, MessageDto> bffMessageSender() {
-        return KafkaSender.create(
-                SenderOptions
-                        .create(
-                                buildProducerFactoryConfig(kafkaProperties, kafkaProperties.getBffQueue())
+                                buildProducerFactoryConfig(kafkaProperties, kafkaProperties.getBricksQueue())
                         )
         );
     }

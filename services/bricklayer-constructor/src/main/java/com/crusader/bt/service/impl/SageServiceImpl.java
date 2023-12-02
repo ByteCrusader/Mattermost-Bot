@@ -18,7 +18,7 @@ public class SageServiceImpl implements SageService {
 
     @Override
     public Mono<Void> successCreateBot(MessageDto createRequest) {
-        return messageProducer.sendBffMessage(createRequest, MessageEventType.COMPLETE_CREATE_BOT_EVENT);
+        return messageProducer.sendGenericMessage(createRequest, MessageEventType.COMPLETE_CREATE_BOT_EVENT);
     }
 
     @Override
@@ -28,7 +28,7 @@ public class SageServiceImpl implements SageService {
 
     @Override
     public Mono<Void> successUpdateBot(MessageDto updateRequest) {
-        return messageProducer.sendBffMessage(updateRequest, MessageEventType.COMPLETE_EDIT_BOT_EVENT);
+        return messageProducer.sendGenericMessage(updateRequest, MessageEventType.COMPLETE_EDIT_BOT_EVENT);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class SageServiceImpl implements SageService {
 
     @Override
     public Mono<Void> successDeleteBot(MessageDto deleteRequest) {
-        return messageProducer.sendBffMessage(deleteRequest, MessageEventType.COMPLETE_DELETE_BOT_EVENT);
+        return messageProducer.sendGenericMessage(deleteRequest, MessageEventType.COMPLETE_DELETE_BOT_EVENT);
     }
 
     @Override

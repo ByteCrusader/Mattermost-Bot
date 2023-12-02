@@ -42,7 +42,7 @@ public class BotsServiceImpl implements BotsService {
                 .map(messageDtoMapper::mapToMessageDto)
                 .doOnSuccess(result -> messageProducer.sendConstructorMessage(
                         result,
-                        MessageEventType.COMPLETE_CREATE_BOT_EVENT
+                        MessageEventType.PROCESSED_CREATE_BOT_EVENT
                 ))
                 .doOnError(
                         MqUtil::errorPredicate,
@@ -74,7 +74,7 @@ public class BotsServiceImpl implements BotsService {
                 .map(messageDtoMapper::mapToMessageDto)
                 .doOnSuccess(result -> messageProducer.sendConstructorMessage(
                         result,
-                        MessageEventType.COMPLETE_EDIT_BOT_EVENT
+                        MessageEventType.PROCESSED_EDIT_BOT_EVENT
                 ))
                 .doOnError(
                         MqUtil::errorPredicate,
@@ -102,7 +102,7 @@ public class BotsServiceImpl implements BotsService {
                 .map(messageDtoMapper::mapToMessageDto)
                 .doOnSuccess(result -> messageProducer.sendConstructorMessage(
                         result,
-                        MessageEventType.COMPLETE_DELETE_BOT_EVENT
+                        MessageEventType.PROCESSED_DELETE_BOT_EVENT
                 ))
                 .doOnError(
                         MqUtil::errorPredicate,

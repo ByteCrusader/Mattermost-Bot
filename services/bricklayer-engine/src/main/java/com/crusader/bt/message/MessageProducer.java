@@ -33,7 +33,7 @@ public class MessageProducer {
     @SneakyThrows
     public void sendConstructorMessage(MessageDto message, MessageEventType eventType) {
         ProducerRecord<String, MessageDto> producerRecord = new ProducerRecord<>(
-                properties.getConstructorQueue().getTopic(),
+                properties.getBricksQueue().getTopic(),
                 message
         );
 
