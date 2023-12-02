@@ -27,6 +27,7 @@ public class KafkaProperties {
     private TopicDetails constructorQueue;
     private TopicDetails storageQueue;
     private TopicDetails engineQueue;
+    private TopicDetails bffQueue;
 
     @Getter
     @Setter

@@ -29,6 +29,7 @@ public class MessageProducer {
 
     private final KafkaSender<String, MessageDto> storageMessageSender;
     private final KafkaSender<String, MessageDto> engineMessageSender;
+    private final KafkaSender<String, MessageDto> bffMessageSender;
     private final KafkaProperties properties;
 
     @SneakyThrows
@@ -47,6 +48,16 @@ public class MessageProducer {
                 engineMessageSender,
                 message,
                 properties.getEngineQueue().getTopic(),
+                eventType
+        );
+    }
+
+    @SneakyThrows
+    public Mono<Void> sendBffMessage(MessageDto message, MessageEventType eventType) {
+        return sendRequestMessage(
+                bffMessageSender,
+                message,
+                properties.getBffQueue().getTopic(),
                 eventType
         );
     }

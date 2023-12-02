@@ -84,3 +84,6 @@ kafka:
   engineQueue:
     topic: "engine-queue"
     clientNGroupId: "constructor.integrity.application"
+  bffQueue:
+    topic: "bff-queue"
+    clientNGroupId: "constructor.integrity.application"

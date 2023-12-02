@@ -3,6 +3,8 @@ package com.crusader.bt.message;
 import com.crusader.bt.dto.MessageDto;
 import com.crusader.bt.enums.MessageEventType;
 import com.crusader.bt.service.BotsService;
+import com.crusader.bt.service.SageService;
+import com.crusader.bt.utils.MqUtil;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -26,6 +28,7 @@ public class MessageConsumer {
 
     private final KafkaReceiver<String, MessageDto> constructorMessageReceiver;
     private final BotsService botsService;
+    private final SageService sageService;
 
     @SneakyThrows
     @PostConstruct
@@ -42,7 +45,7 @@ public class MessageConsumer {
                         receiverRecord.receiverOffset().acknowledge()
                 )
                 .onErrorContinue(
-                        exc -> !(exc instanceof NoTransactionException),
+                        MqUtil::errorPredicate,
                         (exc, val) -> log.info(
                                 "Event dropped. Application exception into customer queue consumer : {} - {} ",
                                 exc.toString(),
@@ -64,11 +67,20 @@ public class MessageConsumer {
         if (MessageEventType.CREATE_BOT_EVENT.getName().equals(eventType)) {
             return botsService.createBot(receiverRecord.value())
                     .thenReturn(receiverRecord);
+        } else if (MessageEventType.COMPLETE_CREATE_BOT_EVENT.getName().equals(eventType)) {
+            return sageService.successCreateBot(receiverRecord.value())
+                    .thenReturn(receiverRecord);
         } else if (MessageEventType.EDIT_BOT_EVENT.getName().equals(eventType)) {
             return botsService.updateBotInfo(receiverRecord.value())
                     .thenReturn(receiverRecord);
+        } else if (MessageEventType.COMPLETE_EDIT_BOT_EVENT.getName().equals(eventType)) {
+            return sageService.successUpdateBot(receiverRecord.value())
+                    .thenReturn(receiverRecord);
         } else if (MessageEventType.DELETE_BOT_EVENT.getName().equals(eventType)) {
             return botsService.deleteBot(receiverRecord.value())
+                    .thenReturn(receiverRecord);
+        } else if (MessageEventType.COMPLETE_DELETE_BOT_EVENT.getName().equals(eventType)) {
+            return sageService.successDeleteBot(receiverRecord.value())
                     .thenReturn(receiverRecord);
         } else {
             return Mono.just(receiverRecord);

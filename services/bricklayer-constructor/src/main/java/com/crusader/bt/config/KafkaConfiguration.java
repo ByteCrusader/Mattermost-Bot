@@ -67,6 +67,16 @@ public class KafkaConfiguration {
         );
     }
 
+    @Bean
+    public KafkaSender<String, MessageDto> bffMessageSender() {
+        return KafkaSender.create(
+                SenderOptions
+                        .create(
+                                buildProducerFactoryConfig(kafkaProperties, kafkaProperties.getBffQueue())
+                        )
+        );
+    }
+
     private Map<String, Object> buildConsumerFactoryConfig(KafkaProperties details,
                                                            KafkaProperties.TopicDetails topicInfo) {
         Map<String, Object> props = new HashMap<>();
