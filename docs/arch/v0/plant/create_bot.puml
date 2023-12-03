@@ -1,0 +1,91 @@
+@startuml
+actor "Client" as  usr
+participant "Mattermost UI" as in
+box Mattermost Bot Application #LightBlue
+participant "User Layer" as bff
+participant "Constructor Layer" as cnr
+participant "Storage Layer" as str
+participant "Engine Layer" as eng
+end box
+participant "Mattermost API" as out
+
+usr -> in : WebHook - запрос на создание нового бота
+activate in
+    in -> bff : REST - запрос на создание нового бота
+    activate bff
+        bff -> cnr : inner method - создание нового бота
+        activate cnr
+            cnr -> out : REST - создание пользователя с ролью БОТ
+            activate out
+    alt Успешное создание
+            out --> cnr : REST - ответ с информацией о созданной сущности
+            deactivate out
+            cnr -> str : inner method - сохранение новой сущности бота в системе
+            activate str
+            str --> cnr : сущность бота сохранена без внутреннего exception
+            deactivate str
+        cnr --> bff : процесс создания бота завершен без внутреннего exception
+        deactivate cnr
+        bff -> eng : inner method - регистрация нового напоминания по расписанию
+        activate eng
+            eng -> str : inner method - сохранение новой сущности задания (enable, etc.)
+            activate str
+            str --> eng : сущность бота сохранена без внутреннего exception
+            deactivate str
+        eng -> eng : инициализация нового напоминания в системе запуска cron job
+        eng --> bff : процесс регистрации нового напоминания завершен без внутреннего exception
+        deactivate eng
+        bff --> in : REST - ответ об успешном создании бота с UI
+    deactivate bff
+    else Ошибка создания бота в "Mattermost API"
+            activate out
+            out --> cnr : REST - ответ с информацией о созданной сущности
+            deactivate out
+         activate cnr
+         cnr --> bff : проброс возникшего Exception наружу
+         deactivate cnr
+         activate bff
+         bff --> in : REST - ответ о возникновении ошибки при создании бота с UI
+    deactivate bff
+    else Ошибка в сохранении сущности бота в "Constructor Layer"
+            activate out
+            out --> cnr : REST - ответ с информацией о созданной сущности
+            deactivate out
+            activate cnr
+            cnr -> str : inner method - сохранение новой сущности бота в системе
+            activate str
+            str --> cnr : проброс возникшего Exception наружу
+            deactivate str
+         cnr --> bff : проброс возникшего Exception наружу
+         deactivate cnr
+         activate bff
+         bff --> in : REST - ответ о возникновении ошибки при создании бота с UI
+    deactivate bff
+    else Ошибка в создании напоминания для бота в "Engine Layer"
+            activate out
+            out --> cnr : REST - ответ с информацией о созданной сущности
+            deactivate out
+            activate cnr
+            cnr -> str : inner method - сохранение новой сущности бота в системе
+            activate str
+            str --> cnr : сущность бота сохранена без внутреннего exception
+            deactivate str
+        cnr --> bff : процесс создания бота завершен без внутреннего exception
+        deactivate cnr
+        bff -> eng : inner method - регистрация нового напоминания по расписанию
+        activate eng
+            eng -> str : inner method - сохранение новой сущности задания (enable, etc.)
+            activate str
+            str --> eng : проброс возникшего Exception наружу
+            deactivate str
+        eng --> bff : проброс возникшего Exception наружу
+        deactivate eng
+        bff --> in : REST - ответ о возникновении ошибки при создании напоминания с UI
+    deactivate bff
+    end
+    bff --> in : REST - формирование UI ответа для клиента
+    deactivate bff
+in --> usr : Отрисовка ответа в виде UI в чате клиента
+deactivate in
+
+@enduml
