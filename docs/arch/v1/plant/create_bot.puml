@@ -1,0 +1,78 @@
+@startuml
+actor "Client" as  usr
+participant "Mattermost UI" as in
+participant "bff" as bff
+participant "constructor" as cnr
+participant "storage" as str
+participant "engine" as eng
+participant "Mattermost API" as out
+
+usr -> in : WebHook - запрос на создание нового бота
+activate in
+    in -> bff : REST - запрос на создание нового бота
+    activate bff
+        bff -> cnr : REST - создание нового бота
+        activate cnr
+            cnr -> out : REST - создание пользователя с ролью БОТ
+            activate out
+    alt Успешное создание
+            out --> cnr : REST - ответ с информацией о созданной сущности
+            deactivate out
+            cnr -> str : REST - сохранение новой сущности бота в системе совместно с информацией о напоминании
+            activate str
+            str --> cnr : REST - ответ об успешном сохранении бота
+            deactivate str
+            cnr -> eng : REST - регистрация нового напоминания по расписанию
+            activate eng
+                eng -> str : REST - получение актуального состояния задания (enable, etc.)
+                activate str
+                str --> eng : REST - возврат информации о напоминании
+                deactivate str
+            eng --> cnr : REST - ответ об успешной регистрации нового напоминания
+            deactivate eng
+        cnr --> bff : REST - ответ об успешном создании бота
+        deactivate cnr
+    else Ошибка создания бота в "Mattermost API"
+            activate out
+            out --> cnr : REST - ответ с информацией о созданной сущности
+            deactivate out
+         activate cnr
+         cnr --> bff : REST - ответ о возникновении проблемы при создании бота
+         deactivate cnr
+    else Ошибка в сохранении сущности бота в "storage"
+            activate out
+            out --> cnr : REST - ответ с информацией о созданной сущности
+            deactivate out
+            activate cnr
+            cnr -> str : REST - сохранение новой сущности бота в системе совместно с информацией о напоминании
+            activate str
+            str --> cnr : REST - ответ о некорректном сохранении бота
+            deactivate str
+         cnr --> bff : REST - ответ о возникновении проблемы при создании бота
+         deactivate cnr
+    else Ошибка в создании напоминания для бота в "engine"
+            activate out
+            out --> cnr : REST - ответ с информацией о созданной сущности
+            deactivate out
+            activate cnr
+            cnr -> str : REST - сохранение новой сущности бота в системе совместно с информацией о напоминании
+            activate str
+            str --> cnr : REST - ответ об успешном сохранении бота
+            deactivate str
+            cnr -> eng : REST - регистрация нового напоминания по расписанию
+            activate eng
+                eng -> str : REST - получение актуального состояния задания (enable, etc.)
+                activate str
+                str --> eng : REST - возврат информации о напоминании
+                deactivate str
+            eng --> cnr : REST - ответ о некорректной регистрации нового напоминания
+            deactivate eng
+        cnr --> bff : REST - ответ о возникновении проблемы при создании напоминания для бота
+        deactivate cnr
+    end
+    bff --> in : REST - формирование UI ответа для клиента
+    deactivate bff
+in --> usr : Отрисовка ответа в виде UI в чате клиента
+deactivate in
+
+@enduml
