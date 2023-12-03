@@ -1,0 +1,230 @@
+@startuml
+actor "Client" as  clt
+participant "Mattermost UI" as in
+participant "User" as usr
+participant "BFF" as bff
+queue "bff-queue" as bffq
+participant "Constructor" as cnr
+queue "constructor-queue" as cnrq
+participant "Storage" as str
+queue "storage-queue" as strq
+participant "Engine" as eng
+queue "engine-queue" as engq
+participant "Mattermost API" as out
+
+clt -> in : REST - запрос на создание нового бота
+activate in
+    in -> bff : WebHook - запрос на создание нового бота
+    activate bff
+
+group Альтернативный кейс с внешним REST
+clt -> usr : REST - запрос на создание нового бота
+    activate usr
+    usr -> bff : REST - запрос на создание нового бота
+    deactivate usr
+end
+
+        bff -> cnrq : MQ - создание нового бота
+        activate cnrq
+        bff --> in : REST - успешный старт обработки создания бота
+    in --> clt : UI с ответом об успешном запуске сохранения бота
+    deactivate in
+
+group Альтернативный кейс с внешним REST
+        bff --> clt : REST - успешный старт обработки создания бота
+    deactivate bff
+end
+
+        cnrq -> cnr : MQ - событие о создании нового бота
+        deactivate cnrq
+        activate cnr
+            cnr -> out : REST - создание пользователя с ролью БОТ
+            activate out
+
+            alt Успешное создание
+                out --> cnr : REST - ответ с информацией о созданной сущности
+                deactivate out
+                cnr -> strq : MQ - сохранение новой сущности бота в системе совместно с информацией о напоминании
+                activate strq
+                cnr -> engq : MQ - регистрация нового напоминания по расписанию
+                deactivate cnr
+                activate engq
+                    strq -> str : MQ - событие о сохранении информации о боте и Job-ах
+                deactivate strq
+                    activate str
+                        str -> str : DB - сохранение данных в хранилище Postgres
+                        str -> cnrq : MQ - сохранение информации о боте и Job-ах прошло успешно
+                    deactivate str
+                    activate cnrq
+                        engq -> eng : MQ - событие о регистрации нового Job-а
+                deactivate engq
+                activate eng
+                    eng -> str : REST - получение актуальных данных по расписанию (enable, etc.)
+                    activate str
+                        str --> eng : REST - ответ с текущим состоянием в хранилище
+                    deactivate str
+                    eng -> eng : CRON - регистрация нового напоминания по расписанию
+                    eng -> cnrq : MQ - регистрация нового Job-а прошла успешно
+                deactivate eng
+
+                cnrq -> cnr : MQ - событие об успешном сохранении информации в хранилище
+                activate cnr
+                    cnr -> bffq : MQ - данные о боте и Job-ах успешно сохранены
+                deactivate cnr
+                activate bffq
+                    bffq -> bff : MQ - событие об успешном сохранении данных
+                deactivate bffq
+                activate bff
+                    bff -> in : REST - успешное создание бота в системе
+                deactivate bff
+                activate in
+                    in -> clt : UI с ответом об успешном создании нового бота
+                deactivate in
+
+                cnrq -> cnr : MQ - событие об успешной привязке Job-а к боту
+                deactivate cnrq
+                activate cnr
+                    cnr -> bffq : MQ - Job успешно создан и привязан к боту
+                deactivate cnr
+                activate bffq
+                    bffq -> bff : MQ - событие об успешном сохранении Job-а
+                deactivate bffq
+                activate bff
+                    bff -> in : REST - успешное создание Job-а и привязка к боту
+                deactivate bff
+                activate in
+                    in -> clt : UI с ответом об успешном создании Job-а и привязке к боту
+                deactivate in
+
+            else Ошибка создания бота в "Mattermost API"
+                activate out
+                out --> cnr : REST - ответ с ошибкой в процессе создания сущности
+                deactivate out
+                activate cnr
+                cnr --> bffq : MQ - в процессе создания бота возникла проблема
+                deactivate cnr
+                activate bffq
+                    bffq -> bff : MQ - событие о неуспешном создании бота
+                deactivate bffq
+                activate bff
+                    bff -> in : REST - ошибка в создании нового бота
+                deactivate bff
+                activate in
+                    in -> clt : UI с ответом о неуспешном создании бота в системе
+                deactivate in
+
+            else Ошибка в сохранении сущности бота в "storage"
+                activate out
+                out --> cnr : REST - ответ с информацией о созданной сущности
+                deactivate out
+                activate cnr
+                cnr -> strq : MQ - сохранение новой сущности бота в системе совместно с информацией о напоминании
+                activate strq
+                cnr -> engq : MQ - регистрация нового напоминания по расписанию
+                deactivate cnr
+                activate engq
+                    strq -> str : MQ - событие о сохранении информации о боте и Job-ах
+                deactivate strq
+                    activate str
+                        str -> str : DB - в момент внутреннего сохранения произошла ошибка
+                        str -> cnrq : MQ - в процессе сохранения информации о боте произошла ошибка
+                    deactivate str
+                    activate cnrq
+                        engq -> eng : MQ - событие о регистрации нового Job-а
+                deactivate engq
+                activate eng
+                    eng -> str : REST - получение актуальных данных по расписанию (enable, etc.)
+                    activate str
+                        str --> eng : REST - ответ с текущим состоянием в хранилище
+                    deactivate str
+                    eng -> eng : CRON - регистрация нового напоминания по расписанию
+                    eng -> cnrq : MQ - регистрация нового Job-а прошла успешно
+                deactivate eng
+
+                    cnrq -> cnr : MQ - событие о неуспешном сохранении информации в хранилище
+                activate cnr
+                    cnr -> engq : MQ - откат регистрации нового напоминания по расписанию
+                activate engq
+                    cnr -> bffq : MQ - сохранение данных о боте и Job-ах произошло с ошибкой
+                deactivate cnr
+                activate bffq
+                    bffq -> bff : MQ - событие о неуспешном сохранении данных
+                deactivate bffq
+                activate bff
+                    bff -> in : REST - неуспешное создание бота в системе
+                deactivate bff
+                activate in
+                    in -> clt : UI с ответом о неуспешном создании нового бота
+                deactivate in
+
+                cnrq -> cnr : MQ - событие об успешной привязке Job-а к боту
+                deactivate cnrq
+                activate cnr
+                    cnr -> cnr : Скип сообщения об успешной привязке из-за возникшей ранее ошибки
+                deactivate cnr
+
+                engq -> eng : MQ - событие о регистрации нового Job-а
+                deactivate engq
+                activate eng
+                    eng -> eng : Откат регистрации задания
+                deactivate eng
+
+            else Ошибка в создании напоминания для бота в "engine"
+                activate out
+                out --> cnr : REST - ответ с информацией о созданной сущности
+                deactivate out
+                activate cnr
+                cnr -> strq : MQ - сохранение новой сущности бота в системе совместно с информацией о напоминании
+                activate strq
+                cnr -> engq : MQ - регистрация нового напоминания по расписанию
+                deactivate cnr
+                activate engq
+                    strq -> str : MQ - событие о сохранении информации о боте и Job-ах
+                deactivate strq
+                    activate str
+                        str -> str : DB - сохранение данных в хранилище Postgres
+                        str -> cnrq : MQ - сохранение информации о боте и Job-ах прошло успешно
+                    deactivate str
+                    activate cnrq
+                        engq -> eng : MQ - событие о регистрации нового Job-а
+                deactivate engq
+                activate eng
+                    eng -> str : REST - получение актуальных данных по расписанию (enable, etc.)
+                    activate str
+                        str --> eng : REST - ответ с текущим состоянием в хранилище
+                    deactivate str
+                    eng -> eng : CRON - в момент регистрации нового напоминания произошла ошибка
+                    eng -> cnrq : MQ - регистрация нового Job-а прошла неуспешно
+                deactivate eng
+
+                cnrq -> cnr : MQ - событие об успешном сохранении информации в хранилище
+                activate cnr
+                    cnr -> bffq : MQ - данные о боте и Job-ах успешно сохранены
+                deactivate cnr
+                activate bffq
+                    bffq -> bff : MQ - событие об успешном сохранении данных
+                deactivate bffq
+                activate bff
+                    bff -> in : REST - успешное создание бота в системе
+                deactivate bff
+                activate in
+                    in -> clt : UI с ответом об успешном создании нового бота
+                deactivate in
+
+                cnrq -> cnr : MQ - событие о неуспешной привязке Job-а к боту
+                deactivate cnrq
+                activate cnr
+                    cnr -> bffq : MQ - в процессе создания Job-а возникла ошибка
+                deactivate cnr
+                activate bffq
+                    bffq -> bff : MQ - событие о неуспешном сохранении Job-а
+                deactivate bffq
+                activate bff
+                    bff -> in : REST - создание Job-а и привязка к боту завершилась с ошибками
+                deactivate bff
+                activate in
+                    in -> clt : UI с ответом о неуспешном создании Job-а и привязке к боту
+                deactivate in
+            end
+
+@enduml
